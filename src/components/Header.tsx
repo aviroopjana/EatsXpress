@@ -4,6 +4,7 @@ import { CiSearch } from "react-icons/ci";
 import { BsCart3 } from "react-icons/bs";
 import { MdLogin } from "react-icons/md";
 import logo from "../../public/assets/logo.png";
+import MobileNavbar from "./MobileNavbar";
 
 const Header = () => {
   const navLinks = [
@@ -16,13 +17,16 @@ const Header = () => {
 
   return (
     <div className="bg-gradient-to-r from-[#fed754] to-[#edbd41]">
-      <div className="max-w-6xl mx-auto py-5">
+      <div className="max-w-6xl mx-auto py-2 md:py-5 ">
         <div className="flex flex-row items-center justify-between">
           <div className="text-3xl font-bold text-rose-950 flex flex-row items-center">
-            {" "}
-            <img src={logo} alt="logo" className="h-20 w-20" /> EatsXpress
+            <img src={logo} alt="logo" className="h-20 w-20 sm:h-20 sm:w-20" /> 
+            <span className="hidden sm:block">EatsXpress</span>
           </div>
-          <div className="flex flex-row gap-6">
+          <div className="md:hidden mr-4">
+            <MobileNavbar  navLinks={navLinks}/>
+          </div>
+          <div className="hidden sm:flex flex-row gap-6">
             {navLinks.map((navLink) => (
               <Link
                 to={navLink.path}
@@ -33,7 +37,7 @@ const Header = () => {
               </Link>
             ))}
           </div>
-          <div className="flex flex-row gap-2">
+          <div className="hidden sm:flex flex-row gap-2">
             <div className="flex flex-row mr-10 items-center">
               <Button variant={"ghost"} className="hover:bg-transparent">
                 <CiSearch size={25} />
