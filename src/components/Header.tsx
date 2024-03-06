@@ -16,7 +16,7 @@ const Header = () => {
   ];
 
   return (
-    <div className="bg-gradient-to-r from-[#fed754] to-[#edbd41]">
+    <div className="bg-gradient-to-r from-[#fed754] to-[#edbd41] ">
       <div className="max-w-6xl mx-auto py-2 md:py-5 ">
         <div className="flex flex-row items-center justify-between">
           <div className="text-3xl font-bold text-rose-950 flex flex-row items-center">
