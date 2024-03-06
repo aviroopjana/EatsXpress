@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import backgroundBanner from "../../public/assets/background-banner.jpg";
+import backgroundBanner from "@/assets/background-banner.jpg";
 import { Button } from "@/components/ui/button";
 
 const Homepage = () => {

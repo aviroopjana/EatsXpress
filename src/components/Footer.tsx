@@ -1,5 +1,5 @@
 import { FaFacebook, FaMapMarkerAlt } from "react-icons/fa";
-import logo from "../../public/assets/logo.png";
+import logo from "@/assets/logo.png";
 import { ImInstagram } from "react-icons/im";
 import { BsTwitterX, BsWhatsapp } from "react-icons/bs";
 

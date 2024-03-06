@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import { CiSearch } from "react-icons/ci";
 import { BsCart3 } from "react-icons/bs";
 import { MdLogin } from "react-icons/md";
-import logo from "../../public/assets/logo.png";
+import logo from "@/assets/logo.png";
 import MobileNavbar from "./MobileNavbar";
 
 const Header = () => {
