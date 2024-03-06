@@ -47,7 +47,7 @@ const Header = () => {
               </Button>
             </div>
             <Button variant={"ghost"} asChild className="hover:bg-transparent">
-              <Link to="/login">
+              <Link to="/sign-in">
                 Login{" "}
                 <span className="ml-2">
                   <MdLogin size={25} />
