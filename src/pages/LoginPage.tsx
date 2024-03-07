@@ -10,15 +10,65 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import logo from "@/assets/logo.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { AiOutlineLoading } from "react-icons/ai";
+
+interface FormData {
+  username: string;
+  password: string;
+}
 
 const LoginPage = () => {
+  const [formData, setFormData] = useState<FormData>({
+    username: "",
+    password: "",
+  });
+
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const navigate = useNavigate();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      setErrorMessage("");
+      const res = await fetch("/api/auth/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      console.log(data);
+
+      if (!res.ok) {
+        setLoading(false);
+        setErrorMessage(data.message);
+      } else {
+        setLoading(false);
+        navigate("/");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="bg-gradient-to-b from-[#f4c541] to-transparent">
       <div className="min-h-screen max-w-6xl mx-auto">
         <div className=" flex items-center justify-center md:p-10 py-4">
           {/* Sign up form*/}
-          <div className=" md:w-[400px] md:h-[500px]">
+          <form className="md:w-[400px] md:h-[500px]" onSubmit={handleSubmit}>
             <Card className="relative z-50 md:bg-white md:bg-opacity-80 md:backdrop-filter md:backdrop-blur-md shadow-xl">
               <CardHeader className="flex flex-row gap-2">
                 <div>
@@ -32,27 +82,39 @@ const LoginPage = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <form>
                   <div className="flex flex-col w-full items-center gap-4">
                     <div className="flex flex-col space-y-1.5 w-full">
                       <Label>Username</Label>
-                      <Input id="name" placeholder="Enter a your username" />
-                    </div> 
+                      <Input
+                        id="username"
+                        placeholder="Enter a your username"
+                        onChange={handleChange}
+                      />
+                    </div>
                     <div className="flex flex-col space-y-1.5 w-full">
                       <Label>Password</Label>
                       <Input
                         id="password"
                         type="password"
                         placeholder="Enter your password"
+                        onChange={handleChange}
                       />
                     </div>
                   </div>
-                </form>
               </CardContent>
               <CardFooter className="flex flex-col justify-center items-center gap-2">
                 <Button className="w-full" type="submit" variant={"default"}>
-                  Sign In
+                  {loading ? (
+                    <AiOutlineLoading className="h-4 w-4" />
+                  ) : (
+                    "Sign In"
+                  )}
                 </Button>
+                {errorMessage && (
+                  <p className="mt-4 text-red-500 font-semibold">
+                    {errorMessage}
+                  </p>
+                )}
                 <div className="flex items-center">
                   <span className="mx-4">OR</span>
                 </div>
@@ -66,7 +128,7 @@ const LoginPage = () => {
                 </div>
               </CardFooter>
             </Card>
-          </div>
+          </form>
         </div>
       </div>
     </div>
