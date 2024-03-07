@@ -20,7 +20,7 @@ import logo from "@/assets/logo.png";
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
 
-type AccountType = 'personal' | 'family' | 'business';
+type AccountType = "personal" | "family" | "business";
 
 interface FormDataTypes {
   name: string;
@@ -49,6 +49,7 @@ const SignupPage = () => {
 
   const handleAccountTypeChange = (value: AccountType) => {
     setFormData({ ...formData, accountType: value });
+    console.log(formData);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,11 +132,10 @@ const SignupPage = () => {
                   </div>
                   <div className="flex flex-col space-y-1.5 w-full">
                     <Label>Account Type</Label>
-                    <Select>
-                      <SelectTrigger
-                        id="accountType"
-                        onChange={(e) => handleAccountTypeChange(e.currentTarget.value as AccountType)}
-                      >
+                    <Select
+                      onValueChange={(value: AccountType) => handleAccountTypeChange(value)}
+                    >
+                      <SelectTrigger id="accountType">
                         <SelectValue placeholder="Select an account type" />
                       </SelectTrigger>
                       <SelectContent position="popper">
