@@ -13,6 +13,9 @@ import logo from "@/assets/logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { signInFailure, signInStart, signInSuccess } from "@/redux/user/userSlice";
 
 interface FormData {
   username: string;
@@ -25,9 +28,9 @@ const LoginPage = () => {
     password: "",
   });
 
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const dispatch = useDispatch();
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const {error: errorMessage, loading} = useSelector((state: RootState) => state.user);
 
   const navigate = useNavigate();
 
@@ -38,8 +41,7 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      setLoading(true);
-      setErrorMessage("");
+      dispatch(signInStart());
       const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: {
@@ -52,14 +54,13 @@ const LoginPage = () => {
       console.log(data);
 
       if (!res.ok) {
-        setLoading(false);
-        setErrorMessage(data.message);
+        dispatch(signInFailure(data.message))
       } else {
-        setLoading(false);
+        dispatch(signInSuccess(data));
         navigate("/");
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      dispatch(signInFailure(error as string));
     }
   };
 
