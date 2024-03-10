@@ -19,6 +19,7 @@ import {
 import logo from "@/assets/logo.png";
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
+import OAuth from "@/components/OAuth";
 
 type AccountType = "personal" | "family" | "business";
 
@@ -181,12 +182,13 @@ const SignupPage = () => {
                 {/* </form> */}
               </CardContent>
               <CardFooter className="flex flex-col justify-center items-center gap-2">
-                <Button className="w-full" type="submit" variant={"default"}>
+                <Button className="w-full text-[15px]" type="submit" variant={"default"}>
                   Register
                 </Button>
                 <div className="flex items-center">
                   <span className="mx-4">OR</span>
                 </div>
+                <OAuth/>
                 <div className="flex flex-row gap-2">
                   <p className="text-gray-500 dark:text-gray-300 font-medium">
                     Already have an account?

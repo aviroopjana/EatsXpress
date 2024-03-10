@@ -16,6 +16,7 @@ import { AiOutlineLoading } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { signInFailure, signInStart, signInSuccess } from "@/redux/user/userSlice";
+import OAuth from "@/components/OAuth";
 
 interface FormData {
   username: string;
@@ -108,7 +109,7 @@ const LoginPage = () => {
                   {loading ? (
                     <AiOutlineLoading className="h-4 w-4" />
                   ) : (
-                    "Sign In"
+                    <span className="text-[15px]">Sign In</span>
                   )}
                 </Button>
                 {errorMessage && (
@@ -119,6 +120,7 @@ const LoginPage = () => {
                 <div className="flex items-center">
                   <span className="mx-4">OR</span>
                 </div>
+                <OAuth/>
                 <div className="flex flex-row gap-2">
                   <p className="text-gray-500 dark:text-gray-300 font-medium">
                     New to EatsXpress?
