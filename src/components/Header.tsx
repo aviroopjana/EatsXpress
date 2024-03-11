@@ -7,7 +7,6 @@ import logo from "@/assets/logo.png";
 import MobileNavbar from "./MobileNavbar";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-// import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import UserDropdownMenu from "./UserDropdownMenu";
 import { useState } from "react";
 

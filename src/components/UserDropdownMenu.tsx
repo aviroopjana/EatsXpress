@@ -8,10 +8,11 @@ import {
 } from "./ui/dropdown-menu";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { Badge } from "./ui/badge";
+import { signoutSuccess } from "../redux/user/userSlice";
 
 interface UserDropdownMenuProps {
   isOpen: boolean;
@@ -23,6 +24,24 @@ const UserDropdownMenu: FC<UserDropdownMenuProps> = ({
   toggleDropdown,
 }) => {
   const { currentUser } = useSelector((state: RootState) => state.user);
+
+  const dispatch = useDispatch();
+
+  const handleSignout = async () => {
+    try {
+      const res = await fetch(`/api/user/signout`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        dispatch(signoutSuccess());
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={toggleDropdown}>
@@ -52,14 +71,18 @@ const UserDropdownMenu: FC<UserDropdownMenuProps> = ({
           <div className="flex flex-col gap-1">
             <DropdownMenuItem asChild>
               <Link
-                className="block w-full text-left py-2 hover:bg-gray-100"
+                className="block w-full text-left py-2 hover:bg-gray-100 hover:cursor-pointer"
                 to={""}
               >
                 Profile
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Button className="block w-full text-left py-2" variant="ghost">
+              <Button
+                className="block w-full text-left py-2 hover:cursor-pointer"
+                variant="ghost"
+                onClick={handleSignout}
+              >
                 Logout
               </Button>
             </DropdownMenuItem>
