@@ -5,8 +5,21 @@ import { BsCart3 } from "react-icons/bs";
 import { MdLogin } from "react-icons/md";
 import logo from "@/assets/logo.png";
 import MobileNavbar from "./MobileNavbar";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+// import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import UserDropdownMenu from "./UserDropdownMenu";
+import { useState } from "react";
 
 const Header = () => {
+  const { currentUser } = useSelector((state: RootState) => state.user);
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
   const navLinks = [
     { id: "1", title: "Home", path: "/" },
     { id: "2", title: "Food", path: "/foods" },
@@ -20,11 +33,11 @@ const Header = () => {
       <div className="max-w-6xl mx-auto py-2 md:py-5 ">
         <div className="flex flex-row items-center justify-between">
           <div className="text-3xl font-bold text-rose-950 flex flex-row items-center">
-            <img src={logo} alt="logo" className="h-20 w-20 sm:h-20 sm:w-20" /> 
+            <img src={logo} alt="logo" className="h-20 w-20 sm:h-20 sm:w-20" />
             <span className="hidden sm:block">EatsXpress</span>
           </div>
           <div className="md:hidden mr-4">
-            <MobileNavbar  navLinks={navLinks}/>
+            <MobileNavbar navLinks={navLinks} />
           </div>
           <div className="hidden sm:flex flex-row gap-6">
             {navLinks.map((navLink) => (
@@ -46,14 +59,22 @@ const Header = () => {
                 <BsCart3 size={25} />
               </Button>
             </div>
-            <Button variant={"ghost"} asChild className="hover:bg-transparent">
-              <Link to="/sign-in">
-                Login{" "}
-                <span className="ml-2">
-                  <MdLogin size={25} />
-                </span>
-              </Link>
-            </Button>
+            {currentUser ? (
+              <UserDropdownMenu isOpen={isDropdownOpen} toggleDropdown={toggleDropdown} />
+            ) : (
+              <Button
+                variant={"ghost"}
+                asChild
+                className="hover:bg-transparent"
+              >
+                <Link to="/sign-in">
+                  Login{" "}
+                  <span className="ml-2">
+                    <MdLogin size={25} />
+                  </span>
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
       </div>
