@@ -48,7 +48,7 @@ const UserDropdownMenu: FC<UserDropdownMenuProps> = ({
       <DropdownMenuTrigger asChild>
         <Avatar onClick={toggleDropdown} className="hover: cursor-pointer">
           <AvatarImage alt="@shadcn" src={currentUser?.profilePicture} />
-          <AvatarFallback>JP</AvatarFallback>
+          <AvatarFallback>XX</AvatarFallback>
           <span className="sr-only">Toggle user menu</span>
         </Avatar>
       </DropdownMenuTrigger>
@@ -72,7 +72,7 @@ const UserDropdownMenu: FC<UserDropdownMenuProps> = ({
             <DropdownMenuItem asChild>
               <Link
                 className="block w-full text-left py-2 hover:bg-gray-100 hover:cursor-pointer"
-                to={""}
+                to={'/user-profile'}
               >
                 Profile
               </Link>
