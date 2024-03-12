@@ -17,17 +17,25 @@ import {
 } from "./ui/select";
 import logo from "../assets/logo.png";
 import { RootState } from "@/redux/store";
-import { useState, useRef } from "react";
+import { useState, useRef, ChangeEvent, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Toast } from "./ui/toast";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { Button } from "./ui/button";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { app } from "@/firebase";
 
 const UserProfile = () => {
   const { currentUser }: RootState["user"] = useSelector(
     (state: RootState) => state.user
   );
 
+  const [imageFile, setImageFile] = useState<null | File>(null);
   const [imageFileURL, setImageFileURL] = useState<string | null>(null);
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState<
     number | null
@@ -37,6 +45,52 @@ const UserProfile = () => {
   >(null);
 
   const filePickerRef = useRef<HTMLInputElement>(null);
+
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files![0];
+    if( file) {
+      setImageFile(file);
+      setImageFileURL(URL.createObjectURL(file));
+    }
+
+  }
+    console.log(imageFileURL, imageFile);
+
+  useEffect(() => {
+    if (imageFile) {
+      uploadImage();
+    }
+  }, [imageFile]);
+
+  const uploadImage = async () => {
+    const storage = getStorage(app);
+    const fileName = new Date().getTime() + (imageFile?.name ?? "");
+    const storageRef = ref(storage, fileName);
+    if (imageFile) {
+      const uploadTask = uploadBytesResumable(storageRef, imageFile);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setImageFileUploadProgress(Number(progress.toFixed(0)));
+        },
+        () => {
+          setImageFileUploadError(
+            "Could not upload image (File must be less than 2MB)"
+          );
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            setImageFileURL(downloadURL);
+          });
+          setImageFileUploadProgress(null);
+          setImageFile(null);
+          setImageFileURL(null);
+        }
+      );
+    }
+  };
 
   return (
     <div className="h-[950px] inset-0 flex justify-center items-center top-0 z-[-2] w-screen bg-[radial-gradient(#4c0519_1px,#fdd752_1px)] bg-[size:20px_20px]">
@@ -48,6 +102,7 @@ const UserProfile = () => {
           <Input
             type="file"
             accept="image/*"
+            onChange={handleImageChange}
             ref={filePickerRef}
             className="hidden"
             hidden
