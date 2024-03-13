@@ -144,7 +144,7 @@ const UserProfile = () => {
           </div>
           <p className="flex items-center justify-center mb-6 font-semibold text-sm">*Change your photo by clicking on the avatar above*</p>
           {imageFileUploadError && (
-            <Toast color={"failure"}>{imageFileUploadError}</Toast>
+            <Toast variant={"destructive"}>{imageFileUploadError}</Toast>
           )}
           <Card className="relative z-50 md:bg-opacity-80 md:backdrop-filter md:backdrop-blur-md shadow-xl text-red-950">
             <CardHeader className="flex flex-row gap-2 items-center justify-start">
