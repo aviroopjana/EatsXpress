@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { signInFailure, signInStart, signInSuccess } from "@/redux/user/userSlice";
 import OAuth from "@/components/OAuth";
+import { toast } from "sonner";
 
 interface FormData {
   username: string;
@@ -55,9 +56,11 @@ const LoginPage = () => {
       console.log(data);
 
       if (!res.ok) {
-        dispatch(signInFailure(data.message))
+        dispatch(signInFailure(data.message));
+        toast.error(errorMessage);
       } else {
         dispatch(signInSuccess(data));
+        toast.success('Login Successful!', {duration: 4000});
         navigate("/");
       }
     } catch (error) {
@@ -112,11 +115,6 @@ const LoginPage = () => {
                     <span className="text-[15px]">Sign In</span>
                   )}
                 </Button>
-                {errorMessage && (
-                  <p className="mt-4 text-red-500 font-semibold">
-                    {errorMessage}
-                  </p>
-                )}
                 <div className="flex items-center">
                   <span className="mx-4">OR</span>
                 </div>

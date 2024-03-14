@@ -19,7 +19,6 @@ import logo from "../assets/logo.png";
 import { RootState } from "@/redux/store";
 import { useState, useRef, ChangeEvent, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Toast } from "./ui/toast";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { Button } from "./ui/button";
 import {
@@ -29,6 +28,7 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "@/firebase";
+import { toast } from "sonner";
 
 const UserProfile = () => {
   const { currentUser }: RootState["user"] = useSelector(
@@ -48,13 +48,12 @@ const UserProfile = () => {
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files![0];
-    if( file) {
+    if (file) {
       setImageFile(file);
       setImageFileURL(URL.createObjectURL(file));
     }
-
-  }
-    console.log(imageFileURL, imageFile);
+  };
+  console.log(imageFileURL, imageFile);
 
   useEffect(() => {
     if (imageFile) {
@@ -142,10 +141,10 @@ const UserProfile = () => {
               }`}
             />
           </div>
-          <p className="flex items-center justify-center mb-6 font-semibold text-sm">*Change your photo by clicking on the avatar above*</p>
-          {imageFileUploadError && (
-            <Toast variant={"destructive"}>{imageFileUploadError}</Toast>
-          )}
+          <p className="flex items-center justify-center mb-6 font-semibold text-sm">
+            *Change your photo by clicking on the avatar above*
+          </p>
+          {imageFileUploadError && toast.error(imageFileUploadError)}
           <Card className="relative z-50 md:bg-opacity-80 md:backdrop-filter md:backdrop-blur-md shadow-xl text-red-950">
             <CardHeader className="flex flex-row gap-2 items-center justify-start">
               <div>
@@ -193,7 +192,7 @@ const UserProfile = () => {
                   <Input
                     id="password"
                     type="password"
-                    value={'*********'}
+                    value={"*********"}
                     placeholder="Enter your password"
                   />
                 </div>
@@ -202,8 +201,11 @@ const UserProfile = () => {
                   <Select
                   //   onValueChange={(value: AccountType) => handleAccountTypeChange(value)}
                   >
-                    <SelectTrigger id="accountType" value={currentUser?.accountType}>
-                      <SelectValue placeholder={currentUser?.accountType}/>
+                    <SelectTrigger
+                      id="accountType"
+                      value={currentUser?.accountType}
+                    >
+                      <SelectValue placeholder={currentUser?.accountType} />
                     </SelectTrigger>
                     <SelectContent position="popper">
                       <SelectItem value="personal">Personal</SelectItem>

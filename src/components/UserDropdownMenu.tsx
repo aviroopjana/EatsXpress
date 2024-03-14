@@ -13,7 +13,7 @@ import { RootState } from "@/redux/store";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 import { signoutSuccess } from "../redux/user/userSlice";
-import { useToast } from "./ui/use-toast";
+import { toast } from "sonner";
 
 interface UserDropdownMenuProps {
   isOpen: boolean;
@@ -28,8 +28,6 @@ const UserDropdownMenu: FC<UserDropdownMenuProps> = ({
 
   const dispatch = useDispatch();
 
-  const { toast } = useToast();
-
   const handleSignout = async () => {
     try {
       const res = await fetch(`/api/user/signout`, {
@@ -40,10 +38,7 @@ const UserDropdownMenu: FC<UserDropdownMenuProps> = ({
         console.log(data.message);
       } else {
         dispatch(signoutSuccess());
-        toast({ 
-          title: "Logout Successful",
-          description: "You have been successfully logged out.",
-        });
+        toast.success('Signout Successful!', {duration: 4000});
       }
     } catch (err) {
       console.log(err);
