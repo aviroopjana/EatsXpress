@@ -21,6 +21,7 @@ import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import OAuth from "@/components/OAuth";
 import { toast } from "sonner";
+import { AiOutlineLoading } from "react-icons/ai";
 
 type AccountType = "personal" | "family" | "business";
 
@@ -51,6 +52,9 @@ const SignupPage = () => {
 
   const navigate = useNavigate();
 
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+
   const handleAccountTypeChange = (value: AccountType) => {
     setFormData({ ...formData, accountType: value });
     console.log(formData);
@@ -62,8 +66,21 @@ const SignupPage = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (
+      !formData.name ||
+      !formData.username ||
+      !formData.username ||
+      !formData.password ||
+      !formData.phone ||
+      !formData.accountType
+    ) {
+      setErrorMessage("Please enter mandatory fields!");
+      toast.error(errorMessage);
+      return;
+    }
     try {
-      console.log(formData);
+      setLoading(true);
+      setErrorMessage("");
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
@@ -73,9 +90,13 @@ const SignupPage = () => {
       });
 
       const data = await res.json();
-      console.log(data);
-      toast.success("Registered Successfully!", { duration: 4000 });
-      navigate('/sign-in');
+      if (res.ok) {
+        console.log(data);
+        toast.success("Registered Successfully!", { duration: 4000 });
+        navigate("/sign-in");
+      } else {
+        setErrorMessage(data.message);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -83,7 +104,7 @@ const SignupPage = () => {
 
   return (
     <div className="bg-gradient-to-b from-[#f4c541] to-transparent">
-      <div className="md:h-[700px] max-w-6xl mx-auto">
+      <div className="md:h-[800px] max-w-6xl mx-auto">
         <div className=" flex items-center justify-center md:p-10 py-4">
           {/* Sign up form*/}
           <form onSubmit={handleSubmit} className=" md:w-[600px] md:h-[500px]">
@@ -99,11 +120,16 @@ const SignupPage = () => {
                   </CardDescription>
                 </div>
               </CardHeader>
+              <CardFooter>
+                <p className="text-xs font-medium text-zinc-500">
+                  * Mandatory Fields
+                </p>
+              </CardFooter>
               <CardContent>
                 {/* <form onSubmit={handleSubmit}> */}
                 <div className="md:grid md:grid-cols-2 flex flex-col w-full items-center gap-4">
                   <div className="flex flex-col space-y-1.5 w-full">
-                    <Label>Name</Label>
+                    <Label>* Name</Label>
                     <Input
                       id="name"
                       placeholder="Enter your full name"
@@ -111,7 +137,7 @@ const SignupPage = () => {
                     />
                   </div>
                   <div className="flex flex-col space-y-1.5 w-full">
-                    <Label>Username</Label>
+                    <Label>* Username</Label>
                     <Input
                       id="username"
                       placeholder="Enter a unique username"
@@ -119,7 +145,7 @@ const SignupPage = () => {
                     />
                   </div>
                   <div className="flex flex-col space-y-1.5 w-full">
-                    <Label>Email</Label>
+                    <Label>* Email</Label>
                     <Input
                       id="email"
                       type="email"
@@ -128,7 +154,7 @@ const SignupPage = () => {
                     />
                   </div>
                   <div className="flex flex-col space-y-1.5 w-full">
-                    <Label>Password</Label>
+                    <Label>* Password</Label>
                     <Input
                       id="password"
                       type="password"
@@ -137,7 +163,7 @@ const SignupPage = () => {
                     />
                   </div>
                   <div className="flex flex-col space-y-1.5 w-full">
-                    <Label>Account Type</Label>
+                    <Label>* Account Type</Label>
                     <Select
                       onValueChange={(value: AccountType) =>
                         handleAccountTypeChange(value)
@@ -154,7 +180,7 @@ const SignupPage = () => {
                     </Select>
                   </div>
                   <div className="flex flex-col space-y-1.5 w-full">
-                    <Label>Phone Number</Label>
+                    <Label>* Phone Number</Label>
                     <Input
                       id="phone"
                       placeholder="Enter your phone number"
@@ -193,8 +219,13 @@ const SignupPage = () => {
                   className="w-full text-[15px]"
                   type="submit"
                   variant={"default"}
+                  disabled={loading}
                 >
-                  Register
+                  {loading ? (
+                    <AiOutlineLoading className="h-4 w-4" />
+                  ) : (
+                    <span className="text-[15px]">Sign Up</span>
+                  )}
                 </Button>
                 <div className="flex items-center">
                   <span className="mx-4">OR</span>
