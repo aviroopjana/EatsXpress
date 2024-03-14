@@ -17,9 +17,10 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import logo from "@/assets/logo.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import OAuth from "@/components/OAuth";
+import { toast } from "sonner";
 
 type AccountType = "personal" | "family" | "business";
 
@@ -48,6 +49,8 @@ const SignupPage = () => {
     pincode: "",
   });
 
+  const navigate = useNavigate();
+
   const handleAccountTypeChange = (value: AccountType) => {
     setFormData({ ...formData, accountType: value });
     console.log(formData);
@@ -71,6 +74,8 @@ const SignupPage = () => {
 
       const data = await res.json();
       console.log(data);
+      toast.success("Registered Successfully!", { duration: 4000 });
+      navigate('/sign-in');
     } catch (error) {
       console.log(error);
     }
@@ -134,7 +139,9 @@ const SignupPage = () => {
                   <div className="flex flex-col space-y-1.5 w-full">
                     <Label>Account Type</Label>
                     <Select
-                      onValueChange={(value: AccountType) => handleAccountTypeChange(value)}
+                      onValueChange={(value: AccountType) =>
+                        handleAccountTypeChange(value)
+                      }
                     >
                       <SelectTrigger id="accountType">
                         <SelectValue placeholder="Select an account type" />
@@ -182,13 +189,17 @@ const SignupPage = () => {
                 {/* </form> */}
               </CardContent>
               <CardFooter className="flex flex-col justify-center items-center gap-2">
-                <Button className="w-full text-[15px]" type="submit" variant={"default"}>
+                <Button
+                  className="w-full text-[15px]"
+                  type="submit"
+                  variant={"default"}
+                >
                   Register
                 </Button>
                 <div className="flex items-center">
                   <span className="mx-4">OR</span>
                 </div>
-                <OAuth/>
+                <OAuth />
                 <div className="flex flex-row gap-2">
                   <p className="text-gray-500 dark:text-gray-300 font-medium">
                     Already have an account?
