@@ -78,11 +78,13 @@ const UserProfile = () => {
           setImageFileUploadError(
             "Could not upload image (File must be less than 2MB)"
           );
+          toast.error(imageFileUploadError?.toString());
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             setImageFileURL(downloadURL);
           });
+          toast.success('Profile Picture uploaded successfully')
           setImageFileUploadProgress(null);
           setImageFile(null);
           setImageFileURL(null);
@@ -144,7 +146,6 @@ const UserProfile = () => {
           <p className="flex items-center justify-center mb-6 font-semibold text-sm">
             *Change your photo by clicking on the avatar above*
           </p>
-          {imageFileUploadError && toast.error(imageFileUploadError)}
           <Card className="relative z-50 md:bg-opacity-80 md:backdrop-filter md:backdrop-blur-md shadow-xl text-red-950">
             <CardHeader className="flex flex-row gap-2 items-center justify-start">
               <div>
