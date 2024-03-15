@@ -12,6 +12,7 @@ export interface currentUserType {
   username: string;
   email: string;
   name: string;
+  password: string;
   profilePicture: string;
   phone: string;
   address: string;

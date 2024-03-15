@@ -52,17 +52,18 @@ const UserProfile = () => {
   );
 
   const [formData, setFormData] = useState<FormDataTypes>({
-    name: "",
-    username: "",
-    email: "",
-    password: "",
-    accountType: "personal",
-    profilePicture: '',
-    phone: "",
-    address: "",
-    city: "",
-    pincode: "",
+    name: currentUser?.name || "",
+    username: currentUser?.username || "",
+    email: currentUser?.email || "",
+    password: currentUser?.password || "",
+    accountType: currentUser?.accountType as AccountType || "personal",
+    profilePicture: currentUser?.profilePicture || "",
+    phone: currentUser?.phone || "",
+    address: currentUser?.address || "",
+    city: currentUser?.city || "",
+    pincode: currentUser?.pincode || ""
   });
+
   const [updateUserSuccess, setUpdateUserSuccess] = useState<string | null>(
     null
   );
@@ -246,7 +247,7 @@ const UserProfile = () => {
                   <Input
                     id="name"
                     placeholder="Enter your full name"
-                    value={currentUser?.name}
+                    defaultValue={currentUser?.name}
                     onChange={handleChange}
                   />
                 </div>
@@ -255,7 +256,7 @@ const UserProfile = () => {
                   <Input
                     id="username"
                     placeholder="Enter a unique username"
-                    value={currentUser?.username}
+                    defaultValue={currentUser?.username}
                     onChange={handleChange}
                   />
                 </div>
@@ -264,7 +265,7 @@ const UserProfile = () => {
                   <Input
                     id="email"
                     type="email"
-                    value={currentUser?.email}
+                    defaultValue={currentUser?.email}
                     placeholder="Enter your email address"
                     onChange={handleChange}
                   />
@@ -274,7 +275,7 @@ const UserProfile = () => {
                   <Input
                     id="password"
                     type="password"
-                    value={"*********"}
+                    defaultValue={currentUser?.password}
                     placeholder="Enter your password"
                     onChange={handleChange}
                   />
@@ -288,7 +289,7 @@ const UserProfile = () => {
                   >
                     <SelectTrigger
                       id="accountType"
-                      value={currentUser?.accountType}
+                      defaultValue={currentUser?.accountType}
                     >
                       <SelectValue placeholder={currentUser?.accountType} />
                     </SelectTrigger>
@@ -304,7 +305,7 @@ const UserProfile = () => {
                   <Input
                     id="phone"
                     placeholder="Enter your phone number"
-                    value={currentUser?.phone}
+                    defaultValue={currentUser?.phone}
                     onChange={handleChange}
                   />
                 </div>
@@ -313,7 +314,7 @@ const UserProfile = () => {
                   <Input
                     id="address"
                     placeholder="Enter your address"
-                    value={currentUser?.address}
+                    defaultValue={currentUser?.address}
                     onChange={handleChange}
                   />
                 </div>
@@ -322,7 +323,7 @@ const UserProfile = () => {
                   <Input
                     id="city"
                     placeholder="Enter your city"
-                    value={currentUser?.city}
+                    defaultValue={currentUser?.city}
                     onChange={handleChange}
                   />
                 </div>
@@ -331,7 +332,7 @@ const UserProfile = () => {
                   <Input
                     id="pincode"
                     placeholder="Enter your Pincode"
-                    value={currentUser?.pincode}
+                    defaultValue={currentUser?.pincode}
                     onChange={handleChange}
                   />
                 </div>
