@@ -17,8 +17,8 @@ import {
 } from "./ui/select";
 import logo from "../assets/logo.png";
 import { RootState } from "@/redux/store";
-import { useState, useRef, ChangeEvent, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useState, useRef, ChangeEvent, useEffect, FormEvent } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { Button } from "./ui/button";
 import {
@@ -29,11 +29,54 @@ import {
 } from "firebase/storage";
 import { app } from "@/firebase";
 import { toast } from "sonner";
+import { updateStart, updateFailure, updateSuccess } from "@/redux/user/userSlice";
+
+type AccountType = "personal" | "family" | "business";
+
+interface FormDataTypes {
+  name: string;
+  username: string;
+  email: string;
+  password: string;
+  accountType: AccountType;
+  profilePicture: string;
+  phone: string;
+  address: string;
+  city: string;
+  pincode: string;
+}
 
 const UserProfile = () => {
   const { currentUser }: RootState["user"] = useSelector(
     (state: RootState) => state.user
   );
+
+  const [formData, setFormData] = useState<FormDataTypes>({
+    name: "",
+    username: "",
+    email: "",
+    password: "",
+    accountType: "personal",
+    profilePicture: '',
+    phone: "",
+    address: "",
+    city: "",
+    pincode: "",
+  });
+  const [updateUserSuccess, setUpdateUserSuccess] = useState<string | null>(
+    null
+  );
+  const [updateUserError, setUpdateUserError ] = useState<string | null>(null);
+
+  const dispatch = useDispatch();
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleAccountTypeChange = (value: AccountType) => {
+    setFormData({ ...formData, accountType: value });
+  };
 
   const [imageFile, setImageFile] = useState<null | File>(null);
   const [imageFileURL, setImageFileURL] = useState<string | null>(null);
@@ -61,6 +104,40 @@ const UserProfile = () => {
     }
   }, [imageFile]);
 
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setUpdateUserError(null);
+    setUpdateUserSuccess(null);
+    if (Object.keys(formData).length === 0) {
+      setUpdateUserError('No changes made');
+      return;
+    }
+    try {
+      dispatch(updateStart());
+      const res = await fetch(`/api/user/updateUser/${currentUser?._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        dispatch(updateFailure(data.message));
+        setUpdateUserError(data.message);
+        toast.error(updateUserError, {duration: 3000});
+      } else {
+        dispatch(updateSuccess(data));
+        setUpdateUserSuccess("User updated successfully!!");
+        toast.success(updateUserSuccess, {duration: 3000})
+      }
+    } catch (error) {
+      dispatch(updateFailure((error as Error).message));
+      setUpdateUserError((error as Error).message);
+      toast.error(updateUserError, {duration: 3000});
+    }
+  };
+
   const uploadImage = async () => {
     const storage = getStorage(app);
     const fileName = new Date().getTime() + (imageFile?.name ?? "");
@@ -83,6 +160,7 @@ const UserProfile = () => {
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             setImageFileURL(downloadURL);
+            setFormData({ ...formData, profilePicture: downloadURL });
           });
           toast.success('Profile Picture uploaded successfully')
           setImageFileUploadProgress(null);
@@ -99,7 +177,7 @@ const UserProfile = () => {
         <h1 className="text-3xl font-semibold text-center ">
           Personal Information
         </h1>
-        <form className="text-orange-950">
+        <form className="text-orange-950" onSubmit={handleSubmit}>
           <Input
             type="file"
             accept="image/*"
@@ -169,6 +247,7 @@ const UserProfile = () => {
                     id="name"
                     placeholder="Enter your full name"
                     value={currentUser?.name}
+                    onChange={handleChange}
                   />
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
@@ -177,6 +256,7 @@ const UserProfile = () => {
                     id="username"
                     placeholder="Enter a unique username"
                     value={currentUser?.username}
+                    onChange={handleChange}
                   />
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
@@ -186,6 +266,7 @@ const UserProfile = () => {
                     type="email"
                     value={currentUser?.email}
                     placeholder="Enter your email address"
+                    onChange={handleChange}
                   />
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
@@ -195,12 +276,15 @@ const UserProfile = () => {
                     type="password"
                     value={"*********"}
                     placeholder="Enter your password"
+                    onChange={handleChange}
                   />
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
                   <Label>Account Type</Label>
                   <Select
-                  //   onValueChange={(value: AccountType) => handleAccountTypeChange(value)}
+                  onValueChange={(value: AccountType) =>
+                    handleAccountTypeChange(value)
+                  }
                   >
                     <SelectTrigger
                       id="accountType"
@@ -221,6 +305,7 @@ const UserProfile = () => {
                     id="phone"
                     placeholder="Enter your phone number"
                     value={currentUser?.phone}
+                    onChange={handleChange}
                   />
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
@@ -229,6 +314,7 @@ const UserProfile = () => {
                     id="address"
                     placeholder="Enter your address"
                     value={currentUser?.address}
+                    onChange={handleChange}
                   />
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
@@ -237,6 +323,7 @@ const UserProfile = () => {
                     id="city"
                     placeholder="Enter your city"
                     value={currentUser?.city}
+                    onChange={handleChange}
                   />
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
@@ -245,6 +332,7 @@ const UserProfile = () => {
                     id="pincode"
                     placeholder="Enter your Pincode"
                     value={currentUser?.pincode}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
