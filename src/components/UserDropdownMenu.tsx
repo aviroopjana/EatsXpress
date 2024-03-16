@@ -16,6 +16,7 @@ import { signoutSuccess } from "../redux/user/userSlice";
 import { toast } from "sonner";
 import { BiLogOut } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
+import { MdOutlineRestaurantMenu } from "react-icons/md";
 
 interface UserDropdownMenuProps {
   isOpen: boolean;
@@ -26,7 +27,7 @@ const UserDropdownMenu: FC<UserDropdownMenuProps> = ({
   isOpen,
   toggleDropdown,
 }) => {
-  const { currentUser } = useSelector((state: RootState) => state.user); 
+  const { currentUser } = useSelector((state: RootState) => state.user);
 
   const dispatch = useDispatch();
 
@@ -40,7 +41,7 @@ const UserDropdownMenu: FC<UserDropdownMenuProps> = ({
         console.log(data.message);
       } else {
         dispatch(signoutSuccess());
-        toast.success('Signout Successful!', {duration: 4000});
+        toast.success("Signout Successful!", { duration: 4000 });
       }
     } catch (err) {
       console.log(err);
@@ -75,21 +76,32 @@ const UserDropdownMenu: FC<UserDropdownMenuProps> = ({
           <div className="flex flex-col gap-1">
             <DropdownMenuItem asChild>
               <Link
-                className="w-full text-left py-2 hover:bg-gray-100 hover:cursor-pointer flex flex-row justify-start gap-4"
-                to={'/user-profile'}
+                className="w-full text-left py-2 hover:bg-gray-100 hover:cursor-pointer flex flex-row gap-4 font-semibold"
+                to={"/user-profile"}
               >
-                Profile
-                <CgProfile size={20}/>
+                User Profile
+                <CgProfile size={20} />
               </Link>
             </DropdownMenuItem>
+            {currentUser?.accountType === "business" && (
+              <DropdownMenuItem asChild>
+                <Link
+                  className="w-full text-left py-2 hover:bg-gray-100 hover:cursor-pointer flex flex-row gap-2 font-semibold"
+                  to={"/manage-restaurant"}
+                >
+                  Manage Restaurant
+                  <MdOutlineRestaurantMenu size={20}/>
+                </Link>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem asChild>
               <Button
-                className="w-full text-left py-2 hover:cursor-pointer flex flex-row justify-start gap-2"
+                className="w-full text-left py-2 hover:cursor-pointer flex flex-row gap-2 justify-start"
                 variant="ghost"
                 onClick={handleSignout}
               >
                 Logout
-                <BiLogOut size={20}/>
+                <BiLogOut size={20} />
               </Button>
             </DropdownMenuItem>
           </div>

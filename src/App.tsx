@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import UserProfile from "./components/UserProfile";
 import PrivateRoute from "./components/PrivateRoute";
+import ManageRestaurant from "./components/ManageRestaurant";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/sign-up" element={<SignupPage />} />
         <Route element={<PrivateRoute />}>
           <Route path="/user-profile" element={<UserProfile />} />
+          <Route path="/manage-restaurant" element={<ManageRestaurant/>} />
         </Route>
       </Routes>
       <Footer />
