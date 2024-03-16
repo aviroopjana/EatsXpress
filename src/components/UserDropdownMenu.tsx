@@ -14,6 +14,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 import { signoutSuccess } from "../redux/user/userSlice";
 import { toast } from "sonner";
+import { BiLogOut } from "react-icons/bi";
+import { CgProfile } from "react-icons/cg";
 
 interface UserDropdownMenuProps {
   isOpen: boolean;
@@ -54,15 +56,15 @@ const UserDropdownMenu: FC<UserDropdownMenuProps> = ({
           <span className="sr-only">Toggle user menu</span>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
+      <DropdownMenuContent className="w-56 bg-amber-100">
         <div className="p-4">
           <div className="flex flex-row items-center justify-between">
             <span className="font-bold text-lg">{currentUser?.username}</span>
 
             {currentUser?.accountType && (
               <Badge
-                className="mr-8 h-6 w-18 flex items-center"
-                variant={"secondary"}
+                className="mr-8 h-6 w-18 flex items-center bg-rose-950 hover:bg-orange-800"
+                variant="default"
               >
                 {currentUser.accountType}
               </Badge>
@@ -73,19 +75,21 @@ const UserDropdownMenu: FC<UserDropdownMenuProps> = ({
           <div className="flex flex-col gap-1">
             <DropdownMenuItem asChild>
               <Link
-                className="block w-full text-left py-2 hover:bg-gray-100 hover:cursor-pointer"
+                className="w-full text-left py-2 hover:bg-gray-100 hover:cursor-pointer flex flex-row justify-start gap-4"
                 to={'/user-profile'}
               >
                 Profile
+                <CgProfile size={20}/>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Button
-                className="block w-full text-left py-2 hover:cursor-pointer"
+                className="w-full text-left py-2 hover:cursor-pointer flex flex-row justify-start gap-2"
                 variant="ghost"
                 onClick={handleSignout}
               >
                 Logout
+                <BiLogOut size={20}/>
               </Button>
             </DropdownMenuItem>
           </div>
