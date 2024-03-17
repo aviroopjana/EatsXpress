@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-const accountTypes = ["personal", "family", "business"];
+export const accountTypes = ["personal", "family", "business"];
 
 const SignupSchema = z.object({
   name: z.string().min(3, {
@@ -28,8 +28,9 @@ const SignupSchema = z.object({
     message: "City is required",
   }),
   pincode: z.string().min(4, {
-    message: "valid pincode is required",
+    message: "Valid pincode is required",
   }),
 });
 
 export type SignupFormData = z.infer<typeof SignupSchema>;
+export { SignupSchema };

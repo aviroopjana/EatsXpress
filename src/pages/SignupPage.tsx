@@ -18,75 +18,58 @@ import {
 } from "@/components/ui/select";
 import logo from "@/assets/logo.png";
 import { Link, useNavigate } from "react-router-dom";
-import React, { useState } from "react";
+import { useState } from "react";
 import OAuth from "@/components/OAuth";
 import { toast } from "sonner";
 import { AiOutlineLoading } from "react-icons/ai";
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
+import { SignupFormData, SignupSchema } from "@/schemas/SignupSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
-type AccountType = "personal" | "family" | "business";
-
-interface FormDataTypes {
-  name: string;
-  username: string;
-  email: string;
-  password: string;
-  accountType: AccountType;
-  phone: string;
-  address: string;
-  city: string;
-  pincode: string;
-}
+type accountTypes = "personal" | "family" | "business";
 
 const SignupPage = () => {
-  const [formData, setFormData] = useState<FormDataTypes>({
-    name: "",
-    username: "",
-    email: "",
-    password: "",
-    accountType: "personal",
-    phone: "",
-    address: "",
-    city: "",
-    pincode: "",
-  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    trigger
+  } = useForm<SignupFormData>({ resolver: zodResolver(SignupSchema) });
 
   const navigate = useNavigate();
 
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [accountType, setAccountType] = useState("");
+
   const [loading, setLoading] = useState(false);
 
-  const handleAccountTypeChange = (value: AccountType) => {
-    setFormData({ ...formData, accountType: value });
-    console.log(formData);
+  const handleAccountTypeChange = (value: accountTypes) => {
+    setAccountType(value);
+    setValue("accountType", value); // Update accountType value in form state
+    trigger("accountType"); // Trigger validation for accountType
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
-  };
+  // const handleAccountTypeChange = (value: AccountType) => {
+  //   setFormData({ ...formData, accountType: value });
+  //   console.log(formData);
+  // };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (
-      !formData.name ||
-      !formData.username ||
-      !formData.username ||
-      !formData.password ||
-      !formData.phone ||
-      !formData.accountType
-    ) {
-      setErrorMessage("Please enter mandatory fields!");
-      toast.error(errorMessage);
-      return;
-    }
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
+  // };
+
+  const onSubmit = async (values: z.infer<typeof SignupSchema>) => {
+    // e.preventDefault();
     try {
       setLoading(true);
-      setErrorMessage("");
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(values),
       });
 
       const data = await res.json();
@@ -95,7 +78,8 @@ const SignupPage = () => {
         toast.success("Registered Successfully!", { duration: 4000 });
         navigate("/sign-in");
       } else {
-        setErrorMessage(data.message);
+        // setErrorMessage(data.message);
+        toast.error("Please provide all the neccessary details", { duration: 4000 });
       }
     } catch (error) {
       console.log(error);
@@ -104,10 +88,10 @@ const SignupPage = () => {
 
   return (
     <div className="bg-gradient-to-b from-[#f4c541] to-transparent">
-      <div className="md:h-[800px] max-w-6xl mx-auto">
+      <div className="md:h-[950px] max-w-6xl mx-auto">
         <div className=" flex items-center justify-center md:p-10 py-4">
           {/* Sign up form*/}
-          <form onSubmit={handleSubmit} className=" md:w-[600px] md:h-[500px]">
+          <form onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>)} className=" md:w-[600px] md:h-[500px]">
             <Card className="relative z-50 md:bg-white md:bg-opacity-80 md:backdrop-filter md:backdrop-blur-md shadow-xl">
               <CardHeader className="flex flex-row gap-2">
                 <div>
@@ -120,9 +104,9 @@ const SignupPage = () => {
                   </CardDescription>
                 </div>
               </CardHeader>
-              <CardFooter>
+              <CardFooter className="-mt-4">
                 <p className="text-xs font-medium text-zinc-500">
-                  * Mandatory Fields
+                  * All fields are mandatory, however you can always change your information by visiting your profile
                 </p>
               </CardFooter>
               <CardContent>
@@ -133,43 +117,47 @@ const SignupPage = () => {
                     <Input
                       id="name"
                       placeholder="Enter your full name"
-                      onChange={handleChange}
+                      {...register("name")}
                     />
+                    {errors.name && <span className="text-xs text-red-500">{errors.name.message}</span>}
                   </div>
                   <div className="flex flex-col space-y-1.5 w-full">
                     <Label>* Username</Label>
                     <Input
                       id="username"
                       placeholder="Enter a unique username"
-                      onChange={handleChange}
+                      {...register("username")}
                     />
+                    {errors.username && <span className="text-xs text-red-500">{errors.username.message}</span>}
                   </div>
                   <div className="flex flex-col space-y-1.5 w-full">
                     <Label>* Email</Label>
                     <Input
                       id="email"
                       type="email"
+                      {...register("email")}
                       placeholder="Enter your email address"
-                      onChange={handleChange}
                     />
+                    {errors.email && <span className="text-xs text-red-500">{errors.email.message}</span>}
                   </div>
                   <div className="flex flex-col space-y-1.5 w-full">
                     <Label>* Password</Label>
                     <Input
                       id="password"
                       type="password"
+                      {...register("password")}
                       placeholder="Enter your password"
-                      onChange={handleChange}
                     />
+                    {errors.password && <span className="text-xs text-red-500">{errors.password.message}</span>}
                   </div>
                   <div className="flex flex-col space-y-1.5 w-full">
                     <Label>* Account Type</Label>
                     <Select
-                      onValueChange={(value: AccountType) =>
-                        handleAccountTypeChange(value)
-                      }
+                      {...register("accountType")}
+                      value={accountType}
+                      onValueChange={handleAccountTypeChange}
                     >
-                      <SelectTrigger id="accountType">
+                      <SelectTrigger id="accountType" >
                         <SelectValue placeholder="Select an account type" />
                       </SelectTrigger>
                       <SelectContent position="popper">
@@ -178,38 +166,43 @@ const SignupPage = () => {
                         <SelectItem value="business">Business</SelectItem>
                       </SelectContent>
                     </Select>
+                    {errors.accountType && <span className="text-xs text-red-500">{errors.accountType.message}</span>}
                   </div>
                   <div className="flex flex-col space-y-1.5 w-full">
                     <Label>* Phone Number</Label>
                     <Input
                       id="phone"
                       placeholder="Enter your phone number"
-                      onChange={handleChange}
+                      {...register("phone")}
                     />
+                    {errors.phone && <span className="text-xs text-red-500">{errors.phone.message}</span>}
                   </div>
                   <div className="flex flex-col space-y-1.5 w-full">
-                    <Label>Address Line 1</Label>
+                    <Label>* Address Line 1</Label>
                     <Input
                       id="address"
                       placeholder="Enter your address"
-                      onChange={handleChange}
+                      {...register("address")}
                     />
+                    {errors.address && <span className="text-xs text-red-500">{errors.address.message}</span>}
                   </div>
                   <div className="flex flex-col space-y-1.5 w-full">
-                    <Label>City</Label>
+                    <Label>* City</Label>
                     <Input
                       id="city"
                       placeholder="Enter your city"
-                      onChange={handleChange}
+                      {...register("city")}
                     />
+                    {errors.city && <span className="text-xs text-red-500">{errors.city.message}</span>}
                   </div>
                   <div className="flex flex-col space-y-1.5 w-full">
-                    <Label>Pincode</Label>
+                    <Label>* Pincode</Label>
                     <Input
                       id="pincode"
                       placeholder="Enter your Pincode"
-                      onChange={handleChange}
+                      {...register("pincode")}
                     />
+                    {errors.pincode && <span className="text-xs text-red-500">{errors.pincode.message}</span>}
                   </div>
                 </div>
                 {/* </form> */}
