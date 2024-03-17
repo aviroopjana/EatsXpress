@@ -59,12 +59,12 @@ const UserDropdownMenu: FC<UserDropdownMenuProps> = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 bg-amber-100">
         <div className="p-4">
-          <div className="flex flex-row items-center justify-between">
+          <div className="flex flex-row items-center justify-start gap-5">
             <span className="font-bold text-lg">{currentUser?.username}</span>
 
             {currentUser?.accountType && (
               <Badge
-                className="mr-8 h-6 w-18 flex items-center bg-rose-950 hover:bg-orange-800"
+                className="h-6 w-18 flex items-center bg-rose-950 hover:bg-orange-800"
                 variant="default"
               >
                 {currentUser.accountType}
@@ -76,7 +76,7 @@ const UserDropdownMenu: FC<UserDropdownMenuProps> = ({
           <div className="flex flex-col gap-1">
             <DropdownMenuItem asChild>
               <Link
-                className="w-full text-left py-2 hover:bg-gray-100 hover:cursor-pointer flex flex-row gap-4 font-semibold"
+                className="w-full text-left py-2 hover:cursor-pointer flex flex-row gap-4 font-semibold"
                 to={"/user-profile"}
               >
                 User Profile
@@ -86,7 +86,7 @@ const UserDropdownMenu: FC<UserDropdownMenuProps> = ({
             {currentUser?.accountType === "business" && (
               <DropdownMenuItem asChild>
                 <Link
-                  className="w-full text-left py-2 hover:bg-gray-100 hover:cursor-pointer flex flex-row gap-2 font-semibold"
+                  className="w-full text-left py-2 hover:cursor-pointer flex flex-row gap-2 font-semibold"
                   to={"/manage-restaurant"}
                 >
                   Manage Restaurant
