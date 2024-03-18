@@ -30,6 +30,8 @@ import {
 import { Separator } from "./ui/separator";
 import { Checkbox } from "./ui/checkbox";
 import { cuisineList } from "@/config/restaurant-config";
+import MenuSection, { MenuItem } from "./MenuSection";
+
 
 const CreateRestaurant = () => {
   const { restaurant } = useSelector((state: RootState) => state.restaurant);
@@ -41,6 +43,12 @@ const CreateRestaurant = () => {
     setValue,
     // trigger
   } = useForm<RestaurantData>({ resolver: zodResolver(RestaurantSchema) });
+
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+
+  const handleAddMenuItem = (menuItem: MenuItem) => {
+    setMenuItems([...menuItems, menuItem]);
+  };
 
   //   const [createRestaurantSuccess, setCreateRestaurantSuccess] = useState<string | null>(
   //     null
@@ -199,7 +207,7 @@ const CreateRestaurant = () => {
           </div>
 
           {/* Details Section */}
-          <Card className="relative z-50 md:bg-opacity-80 md:backdrop-filter md:backdrop-blur-md shadow-xl w-full md:auto">
+          <Card className="relative z-50 md:bg-opacity-80 md:backdrop-filter md:backdrop-blur-md shadow-xl w-full bg-[#fef3c7]">
             <CardHeader className="flex flex-row items-center justify-center mx-auto">
               <div className="flex flex-col items-center justify-center gap-1 md:text-lg">
                 <CardTitle className="text-xl font-serif font-semibold text-red-950">
@@ -218,6 +226,7 @@ const CreateRestaurant = () => {
                     id="restaurantName"
                     placeholder="Enter your restaurant name"
                     {...register("restaurantName")}
+                    className="border-zinc-400"
                   />
                   {errors.restaurantName && (
                     <span className="text-xs text-red-500">
@@ -231,6 +240,7 @@ const CreateRestaurant = () => {
                     id="location"
                     placeholder="Enter restaurant location"
                     {...register("location")}
+                    className="border-zinc-400"
                   />
                   {errors.location && (
                     <span className="text-xs text-red-500">
@@ -244,6 +254,7 @@ const CreateRestaurant = () => {
                     id="estimatedDeliveryTime"
                     placeholder="Enter your estimated delivery time (in mins)"
                     {...register("estimatedDeliveryTime")}
+                    className="border-zinc-400"
                   />
                   {errors.estimatedDeliveryTime && (
                     <span className="text-xs text-red-500">
@@ -257,6 +268,7 @@ const CreateRestaurant = () => {
                     id="deliveryPrice"
                     placeholder="Enter your delivery charges"
                     {...register("deliveryPrice")}
+                    className="border-zinc-400"
                   />
                   {errors.deliveryPrice && (
                     <span className="text-xs text-red-500">
@@ -266,7 +278,7 @@ const CreateRestaurant = () => {
                 </div>
               </div>
               <div className="my-8">
-                <Separator />
+                <Separator className="bg-slate-500" />
               </div>
 
               {/* Cuisines Section*/}
@@ -279,37 +291,42 @@ const CreateRestaurant = () => {
                     Please select from the below options
                   </p>
                 </div>
-                {/* <Label>Cuisine</Label>
-                <Input
-                    type="checkbox"
-                    title="chch"
-                /> */}
                 <div className="grid grid-cols-3 gap-4 mt-5">
-                    {cuisineList.map((cuisine, index) => (
-                  <div key={index} className="flex items-center">
-                    <Checkbox
-                      {...register(`cuisines.${index}`)}
-                      id={`cuisine-${index}`}
-                    />
-                    <label htmlFor={`cuisine-${index}`} className="ml-2">
-                      {cuisine}
-                    </label>
-                  </div>
-                ))}
-                {errors.cuisines && (
-                  <span className="text-red-600">
-                    At least one cuisine must be selected.
-                  </span>
-                )}
+                  {cuisineList.map((cuisine, index) => (
+                    <div key={index} className="flex items-center">
+                      <Checkbox
+                        {...register(`cuisines.${index}`)}
+                        id={`cuisine-${index}`}
+                      />
+                      <label htmlFor={`cuisine-${index}`} className="ml-2">
+                        {cuisine}
+                      </label>
+                    </div>
+                  ))}
+                  {errors.cuisines && (
+                    <span className="text-red-600">
+                      At least one cuisine must be selected.
+                    </span>
+                  )}
                 </div>
               </div>
 
               <div className="my-8">
-                <Separator />
+                <Separator className="bg-slate-500" />
               </div>
 
               {/*Menu Section */}
-              <div>{/* TO DO */}</div>
+              <div>
+                <div className="flex flex-col items-center justify-center">
+                  <h1 className="text-xl font-serif font-semibold text-red-950">
+                    Menu
+                  </h1>
+                  <p className="text-sm text-muted-foreground text-slate-600">
+                    Create your menu and give each item a name and a price
+                  </p>
+                </div>
+                <MenuSection onSubmitMenuItem={handleAddMenuItem} />
+              </div>
             </CardContent>
           </Card>
         </div>
