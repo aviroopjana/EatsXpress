@@ -47,21 +47,12 @@ const SignupPage = () => {
 
   const handleAccountTypeChange = (value: accountTypes) => {
     setAccountType(value);
-    setValue("accountType", value); // Update accountType value in form state
-    trigger("accountType"); // Trigger validation for accountType
+    setValue("accountType", value); 
+    trigger("accountType"); 
   };
 
-  // const handleAccountTypeChange = (value: AccountType) => {
-  //   setFormData({ ...formData, accountType: value });
-  //   console.log(formData);
-  // };
-
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
-  // };
 
   const onSubmit = async (values: z.infer<typeof SignupSchema>) => {
-    // e.preventDefault();
     try {
       setLoading(true);
       const res = await fetch("/api/auth/signup", {
