@@ -17,7 +17,7 @@ import {
 } from "./ui/select";
 import logo from "../assets/logo.png";
 import { RootState } from "@/redux/store";
-import { useState, useRef, ChangeEvent, useEffect, FormEvent } from "react";
+import { useState, useRef, ChangeEvent, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { Button } from "./ui/button";
@@ -30,39 +30,35 @@ import {
 import { app } from "@/firebase";
 import { toast } from "sonner";
 import { updateStart, updateFailure, updateSuccess } from "@/redux/user/userSlice";
+import { UpdateFormData, UpdateFormSchema } from "@/schemas/UpdateFormSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
 
-type AccountType = "personal" | "family" | "business";
-
-interface FormDataTypes {
-  name: string;
-  username: string;
-  email: string;
-  password: string;
-  accountType: AccountType;
-  profilePicture: string;
-  phone: string;
-  address: string;
-  city: string;
-  pincode: string;
-}
+type accountTypes = "personal" | "family" | "business";
 
 const UserProfile = () => {
   const { currentUser }: RootState["user"] = useSelector(
     (state: RootState) => state.user
   );
 
-  const [formData, setFormData] = useState<FormDataTypes>({
-    name: currentUser?.name || "",
-    username: currentUser?.username || "",
-    email: currentUser?.email || "",
-    password: currentUser?.password || "",
-    accountType: currentUser?.accountType as AccountType || "personal",
-    profilePicture: currentUser?.profilePicture || "",
-    phone: currentUser?.phone || "",
-    address: currentUser?.address || "",
-    city: currentUser?.city || "",
-    pincode: currentUser?.pincode || ""
-  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    trigger
+  } = useForm<UpdateFormData>({ resolver: zodResolver(UpdateFormSchema), defaultValues: {
+    name: currentUser?.name || '',
+      username: currentUser?.username || '',
+      email: currentUser?.email || '',
+      accountType: currentUser?.accountType || '', 
+      phone: currentUser?.phone || '',
+      address: currentUser?.address || '',
+      city: currentUser?.city || '',
+      pincode: currentUser?.pincode || '',
+      profilePicture: currentUser?.profilePicture || '',
+  }});
 
   const [updateUserSuccess, setUpdateUserSuccess] = useState<string | null>(
     null
@@ -71,12 +67,12 @@ const UserProfile = () => {
 
   const dispatch = useDispatch();
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-  };
+  const [accountType, setAccountType] = useState("");
 
-  const handleAccountTypeChange = (value: AccountType) => {
-    setFormData({ ...formData, accountType: value });
+  const handleAccountTypeChange = (value: accountTypes) => {
+    setAccountType(value);
+    setValue("accountType", value); 
+    trigger("accountType"); 
   };
 
   const [imageFile, setImageFile] = useState<null | File>(null);
@@ -97,47 +93,12 @@ const UserProfile = () => {
       setImageFileURL(URL.createObjectURL(file));
     }
   };
-  console.log(imageFileURL, imageFile);
 
   useEffect(() => {
     if (imageFile) {
       uploadImage();
     }
   }, [imageFile]);
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setUpdateUserError(null);
-    setUpdateUserSuccess(null);
-    if (Object.keys(formData).length === 0) {
-      setUpdateUserError('No changes made');
-      return;
-    }
-    try {
-      dispatch(updateStart());
-      const res = await fetch(`/api/user/updateUser/${currentUser?._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        dispatch(updateFailure(data.message));
-        setUpdateUserError(data.message);
-        toast.error(updateUserError, {duration: 3000});
-      } else {
-        dispatch(updateSuccess(data));
-        setUpdateUserSuccess("User updated successfully!!");
-        toast.success(updateUserSuccess, {duration: 3000})
-      }
-    } catch (error) {
-      dispatch(updateFailure((error as Error).message));
-      setUpdateUserError((error as Error).message);
-      toast.error(updateUserError, {duration: 3000});
-    }
-  };
 
   const uploadImage = async () => {
     const storage = getStorage(app);
@@ -161,7 +122,7 @@ const UserProfile = () => {
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             setImageFileURL(downloadURL);
-            setFormData({ ...formData, profilePicture: downloadURL });
+            setValue("profilePicture", downloadURL);
           });
           toast.success('Profile Picture uploaded successfully')
           setImageFileUploadProgress(null);
@@ -172,16 +133,67 @@ const UserProfile = () => {
     }
   };
 
+  const onSubmit = async (values: z.infer<typeof UpdateFormSchema>) => {
+    if(!currentUser) {
+      console.log('currentUser is null');
+      return;
+    }
+    console.log("Current user:", currentUser);
+    const formValuesChanged = Object.keys(values).some(
+      key => {
+        console.log("Current value:", values[key as keyof typeof values]);
+            console.log("Initial value:", currentUser[key as keyof typeof currentUser]);
+            console.log("Comparison result:", values[key as keyof typeof values] !== currentUser[key as keyof typeof currentUser]);
+            return values[key as keyof typeof values] !== currentUser[key as keyof typeof currentUser];
+      }
+  );
+
+  setUpdateUserError(null);
+  setUpdateUserSuccess(null);
+
+  if (!formValuesChanged) {
+      setUpdateUserError('No changes made');
+      toast.error('No changes made', { duration: 3000 });
+      return;
+  }
+
+    try {
+      dispatch(updateStart());
+      const res = await fetch(`/api/user/updateUser/${currentUser?._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        dispatch(updateFailure(data.message));
+        setUpdateUserError(data.message);
+        toast.error(updateUserError, {duration: 3000});
+      } else {
+        dispatch(updateSuccess(data));
+        setUpdateUserSuccess("User updated successfully!!");
+        toast.success(updateUserSuccess, {duration: 3000})
+      }
+    } catch (error) {
+      dispatch(updateFailure((error as Error).message));
+      setUpdateUserError((error as Error).message);
+      toast.error(updateUserError, {duration: 3000});
+    }
+  };
+
   return (
     <div className="h-[950px] inset-0 flex justify-center items-center top-0 z-[-2] w-screen bg-[radial-gradient(#4c0519_1px,#fdd752_1px)] bg-[size:20px_20px]">
       <div className="max-w-4xl w-full p-8 mx-auto backdrop-filter backdrop-blur-md rounded-2xl shadow-xl py-10 overflow-hidden border-t-4 border-t-red-950">
         <h1 className="text-3xl font-semibold text-center ">
           Personal Information
         </h1>
-        <form className="text-orange-950" onSubmit={handleSubmit}>
+        <form className="text-orange-950" onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>)}>
           <Input
             type="file"
             accept="image/*"
+            {...register('profilePicture')}
             onChange={handleImageChange}
             ref={filePickerRef}
             className="hidden"
@@ -221,6 +233,7 @@ const UserProfile = () => {
                 "opacity-60"
               }`}
             />
+            {errors.profilePicture && <span className="text-xs text-red-500">{errors.profilePicture.message}</span>}
           </div>
           <p className="flex items-center justify-center mb-6 font-semibold text-sm">
             *Change your photo by clicking on the avatar above*
@@ -248,8 +261,9 @@ const UserProfile = () => {
                     id="name"
                     placeholder="Enter your full name"
                     defaultValue={currentUser?.name}
-                    onChange={handleChange}
+                    {...register('name')}
                   />
+                  {errors.name && <span className="text-xs text-red-500">{errors.name.message}</span>}
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
                   <Label>Username</Label>
@@ -257,8 +271,9 @@ const UserProfile = () => {
                     id="username"
                     placeholder="Enter a unique username"
                     defaultValue={currentUser?.username}
-                    onChange={handleChange}
+                    {...register('username')}
                   />
+                  {errors.username && <span className="text-xs text-red-500">{errors.username.message}</span>}
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
                   <Label>Email</Label>
@@ -267,25 +282,16 @@ const UserProfile = () => {
                     type="email"
                     defaultValue={currentUser?.email}
                     placeholder="Enter your email address"
-                    onChange={handleChange}
+                    {...register('email')}
                   />
-                </div>
-                <div className="flex flex-col space-y-1.5 w-full">
-                  <Label>Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    defaultValue={currentUser?.password}
-                    placeholder="Enter your password"
-                    onChange={handleChange}
-                  />
+                  {errors.email && <span className="text-xs text-red-500">{errors.email.message}</span>}
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
                   <Label>Account Type</Label>
                   <Select
-                  onValueChange={(value: AccountType) =>
-                    handleAccountTypeChange(value)
-                  }
+                  onValueChange={handleAccountTypeChange}
+                  {...register('accountType')}
+                  value={accountType}
                   >
                     <SelectTrigger
                       id="accountType"
@@ -299,6 +305,7 @@ const UserProfile = () => {
                       <SelectItem value="business">Business</SelectItem>
                     </SelectContent>
                   </Select>
+                  {errors.accountType && <span className="text-xs text-red-500">{errors.accountType.message}</span>}
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
                   <Label>Phone Number</Label>
@@ -306,8 +313,9 @@ const UserProfile = () => {
                     id="phone"
                     placeholder="Enter your phone number"
                     defaultValue={currentUser?.phone}
-                    onChange={handleChange}
+                    {...register('phone')}
                   />
+                  {errors.phone && <span className="text-xs text-red-500">{errors.phone.message}</span>}
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
                   <Label>Address Line 1</Label>
@@ -315,8 +323,9 @@ const UserProfile = () => {
                     id="address"
                     placeholder="Enter your address"
                     defaultValue={currentUser?.address}
-                    onChange={handleChange}
+                    {...register('address')}
                   />
+                  {errors.address && <span className="text-xs text-red-500">{errors.address.message}</span>}
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
                   <Label>City</Label>
@@ -324,8 +333,9 @@ const UserProfile = () => {
                     id="city"
                     placeholder="Enter your city"
                     defaultValue={currentUser?.city}
-                    onChange={handleChange}
+                    {...register('city')}
                   />
+                  {errors.city && <span className="text-xs text-red-500">{errors.city.message}</span>}
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
                   <Label>Pincode</Label>
@@ -333,8 +343,9 @@ const UserProfile = () => {
                     id="pincode"
                     placeholder="Enter your Pincode"
                     defaultValue={currentUser?.pincode}
-                    onChange={handleChange}
+                    {...register('pincode')}
                   />
+                  {errors.pincode && <span className="text-xs text-red-500">{errors.pincode.message}</span>}
                 </div>
               </div>
               {/* </form> */}
