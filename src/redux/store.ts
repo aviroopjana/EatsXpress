@@ -2,9 +2,11 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import userReducer from './user/userSlice';
 import { persistReducer, persistStore} from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+import restaurantReducer from './restaurant/restaurantSlice';
 
 const rootReducers = combineReducers({
   user: userReducer,
+  restaurant: restaurantReducer
 });
 
 const persistConfig = {

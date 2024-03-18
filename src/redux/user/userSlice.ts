@@ -19,6 +19,7 @@ export interface currentUserType {
   city: string;
   pincode: string;
   accountType: string;
+  restaurantId: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -64,6 +65,11 @@ export const userSlice = createSlice({
       state.loading = false;
       state.error = null;
     },
+    updateRestaurantId: (state, action: PayloadAction<string | null>) => {
+      if (state.currentUser) {
+        state.currentUser.restaurantId = action.payload;
+      }
+    },
   },
 });
 
@@ -75,6 +81,7 @@ export const {
   updateSuccess,
   updateFailure,
   updateStart,
+  updateRestaurantId
 } = userSlice.actions;
 
 export default userSlice.reducer;
