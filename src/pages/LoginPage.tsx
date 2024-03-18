@@ -51,21 +51,26 @@ const LoginPage = () => {
         },
         body: JSON.stringify(formData),
       });
-
-      const data = await res.json();
-
+  
       if (!res.ok) {
-        dispatch(signInFailure(data.message));
+        const errorData = await res.json();
+        dispatch(signInFailure(errorData.message || "An error occurred during sign-in."));
         toast.error(errorMessage);
       } else {
-        dispatch(signInSuccess(data));
-        toast.success('Login Successful!', {duration: 4000});
+        const userData = await res.json();
+        console.log(userData);
+        dispatch(signInSuccess(userData));
+        toast.success('Login Successful!', { duration: 4000 });
+        // if (userData.accountType === 'business') {
+        //   dispatch(updateRestaurantId(userData.restaurantId));
+        // }
         navigate("/");
       }
     } catch (error) {
       dispatch(signInFailure(error as string));
     }
   };
+  
 
   return (
     <div className="bg-gradient-to-b from-[#f4c541] to-transparent">
