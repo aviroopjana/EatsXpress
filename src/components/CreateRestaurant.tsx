@@ -20,6 +20,13 @@ import { RootState } from "@/redux/store";
 import { z } from "zod";
 import { Button } from "./ui/button";
 import { FaCamera } from "react-icons/fa";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 
 const CreateRestaurant = () => {
   const { restaurant } = useSelector((state: RootState) => state.restaurant);
@@ -27,7 +34,7 @@ const CreateRestaurant = () => {
   const {
     register,
     handleSubmit,
-    // formState: { errors },
+    formState: { errors },
     setValue,
     // trigger
   } = useForm<RestaurantData>({ resolver: zodResolver(RestaurantSchema) });
@@ -128,7 +135,7 @@ const CreateRestaurant = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="flex flex-col justify-center items-center max-w-5xl w-full mx-auto">
       <div className="flex flex-row items-center justify-center gap-4 mt-10">
         <h2 className="text-xl font-medium">
           It seems like you haven't created your restaurant yet
@@ -145,53 +152,123 @@ const CreateRestaurant = () => {
         </h1>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>)}>
-        {/* Image Section*/}
-        <div className="flex flex-col gap-2">
-          <Label className="text-xl flex items-center py-6 ml-6 font-semibold text-slate-800">
-            Upload a suitable image for your restaurant{" "}
-            <FaCamera className="ml-2" size={25} />
-          </Label>
-          <div className="flex gap-4 items-center justify-between border-4 border-teal-400 border-dotted p-3">
-            <Input
-              type="file"
-              accept="image/*"
-              {...register("imageUrl")}
-              onChange={handleImageChange}
-              ref={filePickerRef}
-            />
-            <Button onClick={uploadImage}>
-              {" "}
-              {imageFileUploadProgress ? (
-                <div className="h-16 w-16">
-                  <CircularProgressbar
-                    value={imageFileUploadProgress}
-                    text={`${imageFileUploadProgress || 0}%`}
-                  />
-                </div>
-              ) : (
-                "Upload Image"
-              )}
-            </Button>
+      <form
+        onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>)}
+        className="max-w-3xl w-full mx-auto flex"
+      >
+        <div className="flex flex-col gap-5 w-full">
+          {/* Image Section*/}
+          <div className="flex flex-col items-center justify-center gap-2 max-w-3xl">
+            <Label className="text-xl flex items-center py-6 font-semibold text-slate-800">
+              Upload a suitable image for your restaurant{" "}
+              <FaCamera className="ml-2" size={25} />
+            </Label>
+            <div className="flex gap-4 items-center justify-between border-4 border-teal-400 border-dotted p-3">
+              <Input
+                type="file"
+                accept="image/*"
+                {...register("imageUrl")}
+                onChange={handleImageChange}
+                ref={filePickerRef}
+              />
+              <Button onClick={uploadImage}>
+                {" "}
+                {imageFileUploadProgress ? (
+                  <div className="h-16 w-16">
+                    <CircularProgressbar
+                      value={imageFileUploadProgress}
+                      text={`${imageFileUploadProgress || 0}%`}
+                    />
+                  </div>
+                ) : (
+                  "Upload Image"
+                )}
+              </Button>
+            </div>
+            {imageFileUploadError && toast.error(imageFileUploadError)}
+            {imageFileURL && (
+              <img
+                src={imageFileURL}
+                alt="upload"
+                className="w-full h-72 object-contain"
+              />
+            )}
           </div>
-          {imageFileUploadError && toast.error(imageFileUploadError)}
-          {imageFileURL && (
-            <img
-              src={imageFileURL}
-              alt="upload"
-              className="w-full h-72 object-contain"
-            />
-          )}
+
+          {/* Details Section */}
+          <Card className="relative z-50 md:bg-opacity-80 md:backdrop-filter md:backdrop-blur-md shadow-xl w-full md:auto">
+            <CardHeader className="flex flex-row items-center justify-center mx-auto">
+              <div className="flex flex-col items-center justify-center gap-1 md:text-lg">
+                <CardTitle className="text-xl font-serif font-semibold text-red-950">Restaurant Details</CardTitle>
+                <CardDescription className="text-muted-foreground text-slate-600 text-sm">
+                  please fill these necessary information below
+                </CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="md:grid md:grid-cols-2 flex flex-col w-full items-center gap-4">
+                <div className="flex flex-col space-y-1.5 w-full">
+                  <Label>Restaurant Name</Label>
+                  <Input
+                    id="restaurantName"
+                    placeholder="Enter your restaurant name"
+                    {...register("restaurantName")}
+                  />
+                  {errors.restaurantName && (
+                    <span className="text-xs text-red-500">
+                      {errors.restaurantName.message}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col space-y-1.5 w-full">
+                  <Label>Location</Label>
+                  <Input
+                    id="location"
+                    placeholder="Enter restaurant location"
+                    {...register("location")}
+                  />
+                  {errors.location && (
+                    <span className="text-xs text-red-500">
+                      {errors.location.message}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col space-y-1.5 w-full">
+                  <Label>Delivery Time (in mins )</Label>
+                  <Input
+                    id="estimatedDeliveryTime"
+                    placeholder="Enter your estimated delivery time (in mins)"
+                    {...register("estimatedDeliveryTime")}
+                  />
+                  {errors.estimatedDeliveryTime && (
+                    <span className="text-xs text-red-500">
+                      {errors.estimatedDeliveryTime.message}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col space-y-1.5 w-full">
+                  <Label>Delivery Charge (in '₹')</Label>
+                  <Input
+                    id="deliveryPrice"
+                    placeholder="Enter your delivery charges"
+                    {...register("deliveryPrice")}
+                  />
+                  {errors.deliveryPrice && (
+                    <span className="text-xs text-red-500">
+                      {errors.deliveryPrice.message}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Cuisines Section*/}
+          <div>{/* TO DO */}</div>
+
+          {/*Menu Section */}
+          <div>{/* TO DO */}</div>
         </div>
-
-        {/* Details Section */}
-        <div></div>
-
-        {/* Cuisines Section*/}
-        <div>{/* TO DO */}</div>
-
-        {/*Menu Section */}
-        <div>{/* TO DO */}</div>
       </form>
     </div>
   );
