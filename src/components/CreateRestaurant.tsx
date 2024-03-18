@@ -27,6 +27,9 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
+import { Separator } from "./ui/separator";
+import { Checkbox } from "./ui/checkbox";
+import { cuisineList } from "@/config/restaurant-config";
 
 const CreateRestaurant = () => {
   const { restaurant } = useSelector((state: RootState) => state.restaurant);
@@ -199,7 +202,9 @@ const CreateRestaurant = () => {
           <Card className="relative z-50 md:bg-opacity-80 md:backdrop-filter md:backdrop-blur-md shadow-xl w-full md:auto">
             <CardHeader className="flex flex-row items-center justify-center mx-auto">
               <div className="flex flex-col items-center justify-center gap-1 md:text-lg">
-                <CardTitle className="text-xl font-serif font-semibold text-red-950">Restaurant Details</CardTitle>
+                <CardTitle className="text-xl font-serif font-semibold text-red-950">
+                  Restaurant Details
+                </CardTitle>
                 <CardDescription className="text-muted-foreground text-slate-600 text-sm">
                   please fill these necessary information below
                 </CardDescription>
@@ -260,14 +265,53 @@ const CreateRestaurant = () => {
                   )}
                 </div>
               </div>
+              <div className="my-8">
+                <Separator />
+              </div>
+
+              {/* Cuisines Section*/}
+              <div>
+                <div className="flex flex-col items-center justify-center">
+                  <h1 className="text-xl font-serif font-semibold text-red-950">
+                    Cuisines
+                  </h1>
+                  <p className="text-sm text-muted-foreground text-slate-600">
+                    Please select from the below options
+                  </p>
+                </div>
+                {/* <Label>Cuisine</Label>
+                <Input
+                    type="checkbox"
+                    title="chch"
+                /> */}
+                <div className="grid grid-cols-3 gap-4 mt-5">
+                    {cuisineList.map((cuisine, index) => (
+                  <div key={index} className="flex items-center">
+                    <Checkbox
+                      {...register(`cuisines.${index}`)}
+                      id={`cuisine-${index}`}
+                    />
+                    <label htmlFor={`cuisine-${index}`} className="ml-2">
+                      {cuisine}
+                    </label>
+                  </div>
+                ))}
+                {errors.cuisines && (
+                  <span className="text-red-600">
+                    At least one cuisine must be selected.
+                  </span>
+                )}
+                </div>
+              </div>
+
+              <div className="my-8">
+                <Separator />
+              </div>
+
+              {/*Menu Section */}
+              <div>{/* TO DO */}</div>
             </CardContent>
           </Card>
-
-          {/* Cuisines Section*/}
-          <div>{/* TO DO */}</div>
-
-          {/*Menu Section */}
-          <div>{/* TO DO */}</div>
         </div>
       </form>
     </div>
