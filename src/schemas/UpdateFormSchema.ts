@@ -12,9 +12,6 @@ const UpdateFormSchema = z.object({
       email: z.string().email({
         message: "Please provide a valid email address",
       }),
-      password: z.string().min(8, {
-        message: "Password must be at least 8 characters long",
-      }),
       accountType: z.string().refine(value => accountTypes.includes(value), {
         message: "Selecting an account type is mandatory"
       }),

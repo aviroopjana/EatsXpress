@@ -32,8 +32,9 @@ import { toast } from "sonner";
 import { updateStart, updateFailure, updateSuccess } from "@/redux/user/userSlice";
 import { UpdateFormData, UpdateFormSchema } from "@/schemas/UpdateFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm, FieldValues } from "react-hook-form";
 import { z } from "zod";
+import { AiOutlineLoading } from "react-icons/ai";
 
 type accountTypes = "personal" | "family" | "business";
 
@@ -133,6 +134,8 @@ const UserProfile = () => {
     }
   };
 
+  const [loading, setLoading] = useState(false);
+
   const onSubmit = async (values: z.infer<typeof UpdateFormSchema>) => {
     if(!currentUser) {
       console.log('currentUser is null');
@@ -159,6 +162,7 @@ const UserProfile = () => {
 
     try {
       dispatch(updateStart());
+      setLoading(true);
       const res = await fetch(`/api/user/updateUser/${currentUser?._id}`, {
         method: "PUT",
         headers: {
@@ -171,20 +175,23 @@ const UserProfile = () => {
         dispatch(updateFailure(data.message));
         setUpdateUserError(data.message);
         toast.error(updateUserError, {duration: 3000});
+        setLoading(false);
       } else {
         dispatch(updateSuccess(data));
         setUpdateUserSuccess("User updated successfully!!");
         toast.success(updateUserSuccess, {duration: 3000})
+        setLoading(false);
       }
     } catch (error) {
       dispatch(updateFailure((error as Error).message));
       setUpdateUserError((error as Error).message);
       toast.error(updateUserError, {duration: 3000});
+      setLoading(false);
     }
   };
 
   return (
-    <div className="h-[950px] inset-0 flex justify-center items-center top-0 z-[-2] w-screen bg-[radial-gradient(#4c0519_1px,#fdd752_1px)] bg-[size:20px_20px]">
+    <div className="h-auto p-8 md:py-14 inset-0 flex justify-center items-center top-0 z-[-2] w-screen bg-[radial-gradient(#4c0519_1px,#fdd752_1px)] bg-[size:20px_20px]">
       <div className="max-w-4xl w-full p-8 mx-auto backdrop-filter backdrop-blur-md rounded-2xl shadow-xl py-10 overflow-hidden border-t-4 border-t-red-950">
         <h1 className="text-3xl font-semibold text-center ">
           Personal Information
@@ -355,8 +362,13 @@ const UserProfile = () => {
                 className="w-[120px] text-[15px] bg-red-950 text-white hover:bg-red-800"
                 type="submit"
                 variant={"secondary"}
+                disabled={loading}
               >
-                Update
+                {loading ? (
+                    <AiOutlineLoading className="h-4 w-4" />
+                  ) : (
+                    <span className="text-[15px]">Update</span>
+                  )}
               </Button>
             </CardFooter>
           </Card>
