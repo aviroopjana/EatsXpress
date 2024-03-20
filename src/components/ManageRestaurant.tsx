@@ -2,6 +2,7 @@ import { RootState } from "@/redux/store"
 import { useSelector } from "react-redux"
 import CreateRestaurant from "./CreateRestaurant";
 import UpdateRestaurant from "./UpdateRestaurant";
+import { Separator } from "./ui/separator";
 
 const ManageRestaurant = () => {
 
@@ -13,6 +14,7 @@ const ManageRestaurant = () => {
         <h1 className="text-3xl font-semibold text-center ">
           Manage Your Restaurant
         </h1>
+        <Separator className="my-5 bg-red-950 border border-red-900"/>
         <div className="w-full mx-auto">
           {currentUser?.restaurantId === null ? <CreateRestaurant/> : <UpdateRestaurant/>}
         </div>

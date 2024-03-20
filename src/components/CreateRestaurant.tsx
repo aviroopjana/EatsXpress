@@ -32,7 +32,6 @@ import { Checkbox } from "./ui/checkbox";
 import { cuisineList } from "@/config/restaurant-config";
 import MenuSection, { MenuItem } from "./MenuSection";
 
-
 const CreateRestaurant = () => {
   const { restaurant } = useSelector((state: RootState) => state.restaurant);
 
@@ -115,10 +114,10 @@ const CreateRestaurant = () => {
     }
   };
 
-  const onSubmit = async (values: z.infer<typeof RestaurantSchema>) => {
+  const onSubmit = async (values: z.infer<typeof RestaurantSchema>, e: React.FormEvent) => {
     //   setUpdateRestaurantError(null);
     //   setCreateRestaurantSuccess(null);
-
+    e.preventDefault();
     try {
       //   dispatch(updateStart());
       const res = await fetch(`/api/user/updateUser/${restaurant?._id}`, {
@@ -326,6 +325,14 @@ const CreateRestaurant = () => {
                   </p>
                 </div>
                 <MenuSection onSubmitMenuItem={handleAddMenuItem} />
+                {/* Render the added menu items */}
+                {/* <ul>
+                  {menuItems.map((menuItem, index) => (
+                    <li key={index}>
+                      {menuItem.name} - {menuItem.price}
+                    </li>
+                  ))}
+                </ul> */}
               </div>
             </CardContent>
           </Card>
