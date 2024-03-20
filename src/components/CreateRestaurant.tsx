@@ -145,12 +145,12 @@ const CreateRestaurant = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center max-w-5xl w-full mx-auto">
+    <div className="flex flex-col justify-center items-center max-w-6xl w-full mx-auto">
       <div className="flex flex-row items-center justify-center gap-4 mt-10">
         <h2 className="text-xl font-medium">
           It seems like you haven't created your restaurant yet
         </h2>
-        <TfiThought size={25} />
+        <TfiThought className="size-14" size={25} />
       </div>
       <h2 className="text-xl mt-2 font-medium text-slate-600">
         No worries, start creating your restaurant by filling the details below
@@ -171,7 +171,7 @@ const CreateRestaurant = () => {
           <div className="flex flex-col items-center justify-center gap-2 max-w-3xl">
             <Label className="text-xl flex items-center py-6 font-semibold text-slate-800">
               Upload a suitable image for your restaurant{" "}
-              <FaCamera className="ml-2" size={25} />
+              <FaCamera className="ml-2 size-10" size={25} />
             </Label>
             <div className="flex gap-4 items-center justify-between border-4 border-teal-400 border-dotted p-3">
               <Input
@@ -290,7 +290,7 @@ const CreateRestaurant = () => {
                     Please select from the below options
                   </p>
                 </div>
-                <div className="grid grid-cols-3 gap-4 mt-5">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-5">
                   {cuisineList.map((cuisine, index) => (
                     <div key={index} className="flex items-center">
                       <Checkbox
@@ -324,15 +324,7 @@ const CreateRestaurant = () => {
                     Create your menu and give each item a name and a price
                   </p>
                 </div>
-                <MenuSection onSubmitMenuItem={handleAddMenuItem} />
-                {/* Render the added menu items */}
-                {/* <ul>
-                  {menuItems.map((menuItem, index) => (
-                    <li key={index}>
-                      {menuItem.name} - {menuItem.price}
-                    </li>
-                  ))}
-                </ul> */}
+                <MenuSection onSubmitMenuItem={handleAddMenuItem} />   
               </div>
             </CardContent>
           </Card>

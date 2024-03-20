@@ -36,7 +36,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({ onSubmitMenuItem }) => {
   return (
     <div>
       <div className="mt-4">
-        <div className="flex flex-row items-center justify-start gap-2">
+        <div className="flex flex-col md:flex-row md:items-start justify-start gap-2">
           <div>
             <Label>Item Name</Label>
             <Input
@@ -76,7 +76,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({ onSubmitMenuItem }) => {
         </div>
         <button
           type="submit"
-          onClick={handleSubmit} 
+          onClick={handleSubmit}
           className="bg-red-950 text-white rounded-lg px-4 py-2 mt-3 text-sm font-semibold"
         >
           Add Menu Item
@@ -86,24 +86,34 @@ const MenuSection: React.FC<MenuSectionProps> = ({ onSubmitMenuItem }) => {
       {/* Display added items */}
       <div className="mt-4">
         <h2 className="text-xl font-semibold">Added Items:</h2>
-        <ul>
-    {addedItems.map((item, index) => (
-      <li key={index} className="flex flex-col gap-2">
-        <div className="flex flex-row items-center">
-          <Label className="mr-2">Item Name:</Label>
-          <span className="border border-zinc-400 rounded-lg px-2 py-1">{item.name}</span>
-        </div>
-        <div className="flex flex-row items-center">
-          <Label className="mr-2">Item Description:</Label>
-          <span className="border border-zinc-400 rounded-lg px-2 py-1">{item.description}</span>
-        </div>
-        <div className="flex flex-row items-center">
-          <Label className="mr-2">Item Price:</Label>
-          <span className="border border-zinc-400 rounded-lg px-2 py-1">{item.price}</span>
-        </div>
-      </li>
-    ))}
-  </ul>
+          {addedItems.map((item, index) => (
+            <div key={index} className="flex flex-col md:flex-row gap-3 mt-2">
+              <div className="flex flex-row items-center">
+                <Label>Item Name:</Label>
+                <Input
+                  className="border border-zinc-400 rounded-lg px-2 py-1 w-32"
+                  value={item.name}
+                  readOnly
+                />
+              </div>
+              <div className="flex flex-row items-center">
+                <Label>Item Description:</Label>
+                <Input
+                  value={item.description}
+                  className="border border-zinc-400 rounded-lg px-2 py-1 w-72"
+                  readOnly
+                />
+              </div>
+              <div className="flex flex-row items-center">
+                <Label>Item Price:</Label>
+                <Input
+                  value={item.price}
+                  className="border border-zinc-400 rounded-lg px-2 py-1 w-12"
+                  readOnly
+                />
+              </div>
+            </div>
+          ))}
       </div>
     </div>
   );
