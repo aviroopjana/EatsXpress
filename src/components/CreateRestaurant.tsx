@@ -24,30 +24,27 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "./ui/card";
 import { Separator } from "./ui/separator";
 import { Checkbox } from "./ui/checkbox";
 import { cuisineList } from "@/config/restaurant-config";
-import MenuSection, { MenuItem } from "./MenuSection";
+import MenuSection from "./MenuSection";
 
 const CreateRestaurant = () => {
   const { restaurant } = useSelector((state: RootState) => state.restaurant);
+  const { menuItems } = useSelector((state: RootState) => state.menu);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
-    // trigger
   } = useForm<RestaurantData>({ resolver: zodResolver(RestaurantSchema) });
 
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-
-  const handleAddMenuItem = (menuItem: MenuItem) => {
-    setMenuItems([...menuItems, menuItem]);
-  };
+  console.log("Menu Items:", menuItems);
 
   //   const [createRestaurantSuccess, setCreateRestaurantSuccess] = useState<string | null>(
   //     null
@@ -114,7 +111,10 @@ const CreateRestaurant = () => {
     }
   };
 
-  const onSubmit = async (values: z.infer<typeof RestaurantSchema>, e: React.FormEvent) => {
+  const onSubmit = async (
+    values: z.infer<typeof RestaurantSchema>,
+    e: React.FormEvent
+  ) => {
     //   setUpdateRestaurantError(null);
     //   setCreateRestaurantSuccess(null);
     e.preventDefault();
@@ -226,6 +226,7 @@ const CreateRestaurant = () => {
                     placeholder="Enter your restaurant name"
                     {...register("restaurantName")}
                     className="border-zinc-400"
+                    required
                   />
                   {errors.restaurantName && (
                     <span className="text-xs text-red-500">
@@ -239,6 +240,7 @@ const CreateRestaurant = () => {
                     id="location"
                     placeholder="Enter restaurant location"
                     {...register("location")}
+                    required
                     className="border-zinc-400"
                   />
                   {errors.location && (
@@ -251,8 +253,12 @@ const CreateRestaurant = () => {
                   <Label>Delivery Time (in mins )</Label>
                   <Input
                     id="estimatedDeliveryTime"
+                    type="number"
+                    required
                     placeholder="Enter your estimated delivery time (in mins)"
-                    {...register("estimatedDeliveryTime")}
+                    {...register("estimatedDeliveryTime", {
+                      valueAsNumber: true,
+                    })}
                     className="border-zinc-400"
                   />
                   {errors.estimatedDeliveryTime && (
@@ -265,8 +271,10 @@ const CreateRestaurant = () => {
                   <Label>Delivery Charge (in '₹')</Label>
                   <Input
                     id="deliveryPrice"
+                    type="number"
+                    required
                     placeholder="Enter your delivery charges"
-                    {...register("deliveryPrice")}
+                    {...register("deliveryPrice", { valueAsNumber: true })}
                     className="border-zinc-400"
                   />
                   {errors.deliveryPrice && (
@@ -324,9 +332,22 @@ const CreateRestaurant = () => {
                     Create your menu and give each item a name and a price
                   </p>
                 </div>
-                <MenuSection onSubmitMenuItem={handleAddMenuItem} />   
+                <MenuSection/>
               </div>
             </CardContent>
+            <div className="my-8">
+              <Separator className="bg-slate-500" />
+            </div>
+            <CardFooter className="flex flex-col justify-center items-center gap-2">
+              <Button
+                className="w-[120px] text-[15px] bg-red-950 text-white hover:bg-red-800"
+                type="submit"
+                variant={"secondary"}
+                //  disabled={loading}
+              >
+                Create
+              </Button>
+            </CardFooter>
           </Card>
         </div>
       </form>
