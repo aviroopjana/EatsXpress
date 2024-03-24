@@ -2,20 +2,23 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface RestaurantState {
   restaurant: Restaurant | null;
+  loading: boolean;
+  success: boolean;
+  error: string | null;
 }
 
 interface IMenuItem {
-    _id: string;
-    name: string;
-    description?: string;
-    price: number;
+  _id: string;
+  name: string;
+  description?: string;
+  price: number;
 }
 
 interface Restaurant {
   _id: string;
   restaurantName: string;
   location: string;
-  owner: string; 
+  owner: string;
   estimatedDeliveryTime: number;
   deliveryPrice: number;
   imageUrl: string;
@@ -25,18 +28,37 @@ interface Restaurant {
 
 const initialState: RestaurantState = {
   restaurant: null,
+  loading: false,
+  success: false,
+  error: null,
 };
 
 const restaurantSlice = createSlice({
   name: "restaurant",
   initialState,
   reducers: {
-    setRestaurant: (state, action: PayloadAction<Restaurant>) => {
+    setRestaurantStart: (state) => {
+      state.loading = true;
+      state.success = false;
+      state.error = null;
+    },
+    setRestaurantSuccess: (state, action: PayloadAction<Restaurant>) => {
       state.restaurant = action.payload;
+      state.loading = false;
+      state.success = true;
+      state.error = null;
+    },
+    setRestaurantFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.success = false;
+      state.error = action.payload;
     },
   },
 });
 
-// Export actions and reducer
-export const { setRestaurant } = restaurantSlice.actions;
+export const {
+  setRestaurantStart,
+  setRestaurantSuccess,
+  setRestaurantFailure
+} = restaurantSlice.actions;
 export default restaurantSlice.reducer;

@@ -2,7 +2,7 @@ import { TfiThought } from "react-icons/tfi";
 import logo from "@/assets/logo.png";
 import { Label } from "./ui/label";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { app } from "@/firebase";
 import {
   getStorage,
@@ -14,7 +14,7 @@ import { CircularProgressbar } from "react-circular-progressbar";
 import { toast } from "sonner";
 import { RestaurantData, RestaurantSchema } from "@/schemas/RestaurantSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 import { Input } from "./ui/input";
 import { RootState } from "@/redux/store";
 import { z } from "zod";
@@ -32,6 +32,11 @@ import { Separator } from "./ui/separator";
 import { Checkbox } from "./ui/checkbox";
 import { cuisineList } from "@/config/restaurant-config";
 import MenuSection from "./MenuSection";
+import {
+  setRestaurantFailure,
+  setRestaurantStart,
+  setRestaurantSuccess,
+} from "@/redux/restaurant/restaurantSlice";
 
 const CreateRestaurant = () => {
   const { restaurant } = useSelector((state: RootState) => state.restaurant);
@@ -44,14 +49,9 @@ const CreateRestaurant = () => {
     setValue,
   } = useForm<RestaurantData>({ resolver: zodResolver(RestaurantSchema) });
 
-  console.log("Menu Items:", menuItems);
+  // console.log("Menu Items:", menuItems);
 
-  //   const [createRestaurantSuccess, setCreateRestaurantSuccess] = useState<string | null>(
-  //     null
-  //   );
-  //   const [updateRestaurantError, setUpdateRestaurantError ] = useState<string | null>(null);
-
-  //   const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const [imageFile, setImageFile] = useState<null | File>(null);
   const [imageFileURL, setImageFileURL] = useState<string | null>(null);
@@ -102,7 +102,7 @@ const CreateRestaurant = () => {
             setImageFileURL(downloadURL);
             setValue("imageUrl", downloadURL);
           });
-          toast.success("Profile Picture uploaded successfully");
+          toast.success("Restaurant Image uploaded successfully");
           setImageFileUploadProgress(null);
           setImageFile(null);
           setImageFileURL(null);
@@ -113,36 +113,61 @@ const CreateRestaurant = () => {
 
   const onSubmit = async (
     values: z.infer<typeof RestaurantSchema>,
-    e: React.FormEvent
   ) => {
-    //   setUpdateRestaurantError(null);
-    //   setCreateRestaurantSuccess(null);
-    e.preventDefault();
+    console.log("Submitting form:", values);
     try {
-      //   dispatch(updateStart());
-      const res = await fetch(`/api/user/updateUser/${restaurant?._id}`, {
-        method: "PUT",
+      console.log('Submitting form:', values);
+      dispatch(setRestaurantStart());
+      const {
+        restaurantName,
+        imageUrl,
+        location,
+        deliveryPrice,
+        estimatedDeliveryTime,
+        cuisines,
+        owner,
+      } = values;
+
+      const restaurantData = {
+        restaurantName,
+        location,
+        estimatedDeliveryTime,
+        imageUrl,
+        deliveryPrice,
+        cuisines,
+        menu: menuItems,
+        owner,
+      };
+
+      const res = await fetch('/api/my_restaurant/createRestaurant', {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(restaurantData),
       });
-      //   const data = await res.json();
+      console.log('restaurant data:', restaurantData)
+      const data = await res.json();
       if (!res.ok) {
-        // dispatch(updateFailure(data.message));
-        // setUpdateRestaurantError(data.message);
-        // toast.error(updateUserError, {duration: 3000});
+        dispatch(setRestaurantFailure(data.message));
+        toast.error(data.message, { duration: 3000 });
       } else {
-        // dispatch(updateSuccess(data));
-        // setCreateRestaurantSuccess("User updated successfully!!");
-        // toast.success(updateUserSuccess, {duration: 3000})
+        dispatch(setRestaurantSuccess(data));
+        toast.success("Restaurant created successfully!", { duration: 3000 });
+        console.log('restaurant:', restaurant);
       }
     } catch (error) {
-      //   dispatch(updateFailure((error as Error).message));
-      //   setUpdateRestaurantError((error as Error).message);
-      //   toast.error(updateUserError, {duration: 3000});
+      dispatch(setRestaurantFailure((error as Error).message));
+      toast.error((error as Error).message, { duration: 3000 });
     }
   };
+
+  const onError = (errors: FieldErrors<RestaurantData>) => {
+    console.log('Form Errors: ', errors)
+  }
+
+//   const handleSubmitForm = handleSubmit(onSubmit as SubmitHandler<FieldValues>);
+// console.log('handleSubmitForm:', handleSubmitForm);
 
   return (
     <div className="flex flex-col justify-center items-center max-w-6xl w-full mx-auto">
@@ -163,7 +188,8 @@ const CreateRestaurant = () => {
       </div>
 
       <form
-        onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>)}
+        onSubmit={handleSubmit(onSubmit, onError)}
+        // onSubmit={handleSubmitForm}
         className="max-w-3xl w-full mx-auto flex"
       >
         <div className="flex flex-col gap-5 w-full">
@@ -332,7 +358,7 @@ const CreateRestaurant = () => {
                     Create your menu and give each item a name and a price
                   </p>
                 </div>
-                <MenuSection/>
+                <MenuSection />
               </div>
             </CardContent>
             <div className="my-8">
@@ -343,7 +369,7 @@ const CreateRestaurant = () => {
                 className="w-[120px] text-[15px] bg-red-950 text-white hover:bg-red-800"
                 type="submit"
                 variant={"secondary"}
-                //  disabled={loading}
+                //disabled={loading}
               >
                 Create
               </Button>

@@ -5,7 +5,7 @@ interface MenuState {
 }
 
 interface IMenuItem {
-    _id: string;
+    productId: string;
     name: string;
     description?: string;
     price: number;
@@ -23,7 +23,7 @@ const menuSlice = createSlice({
       state.menuItems.push(action.payload);
     },
     removeMenuItem: (state, action: PayloadAction<string>) => {
-      state.menuItems = state.menuItems.filter(item => item._id !== action.payload);
+      state.menuItems = state.menuItems.filter(item => item.productId !== action.payload);
     },
   },
 });

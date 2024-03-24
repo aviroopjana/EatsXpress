@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { v4 as uuidv4 } from "uuid";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { MenuData, MenuSchema } from "@/schemas/RestaurantSchema";
@@ -11,6 +10,7 @@ import { FaTrash } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { addMenuItem, removeMenuItem } from "@/redux/restaurant/menuSlice";
 import { RootState } from "@/redux/store";
+import { v4 as uuidv4 } from 'uuid';
 
 export type MenuItem = z.infer<typeof MenuSchema>;
 
@@ -39,9 +39,10 @@ const MenuSection = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const newProductId = uuidv4();
     const menuItem: MenuItem = {
-      _id: uuidv4(), // Generate a unique ID
       name: itemName,
+      productId: newProductId,
       description: itemDescription || undefined,
       price: parseFloat(itemPrice),
     };
@@ -50,13 +51,20 @@ const MenuSection = () => {
     setItemName("");
     setItemDescription("");
     setItemPrice("");
-    setAddedItems([...addedItems, menuItem]);
+    // setAddedItems([...addedItems, menuItem]);
+    setAddedItems([...addedItems, { ...menuItem, productId: newProductId }]);
   };
 
-  const removeItem = (itemToRemove: MenuItem) => {
-    dispatch(removeMenuItem(itemToRemove._id));
-    console.log(menuItems);
+  // const removeItem = (itemToRemove: MenuItem) => {
+  //   dispatch(removeMenuItem(itemToRemove.productId));
+  //   console.log(menuItems);
+  // };
+
+  const removeItem = (productIdToRemove: string) => {
+    dispatch(removeMenuItem(productIdToRemove));
+    setAddedItems(addedItems.filter(item => item.productId !== productIdToRemove));
   };
+  
 
   return (
     <div>
@@ -140,7 +148,7 @@ const MenuSection = () => {
               />
             </div>
             <Button
-              onClick={() => removeItem(item)}
+              onClick={() => removeItem(item.productId)}
               className="hover:bg-transparent hover:bg-[#fdedaf]"
               variant={"ghost"}
             >

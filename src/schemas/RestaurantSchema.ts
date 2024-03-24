@@ -1,7 +1,7 @@
 import * as z from "zod";
 
 const MenuSchema = z.object({
-    _id: z.string(),
+    productId: z.string(),
     name: z.string(),
     description: z.string().optional(),
     price: z.number(),
@@ -11,12 +11,12 @@ const MenuSchema = z.object({
 const RestaurantSchema = z.object({
   restaurantName: z.string(),
   location: z.string(),
-  owner: z.string(),
+  owner: z.string().optional(),
   estimatedDeliveryTime: z.number(),
   deliveryPrice: z.number(),
   imageUrl: z.string(),
   cuisines: z.array(z.string()),
-  menu: z.array(MenuSchema),
+  menu: z.array(MenuSchema).optional(),
 });
 
 export type RestaurantData = z.infer<typeof RestaurantSchema>;
