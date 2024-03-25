@@ -29,7 +29,11 @@ import {
 } from "firebase/storage";
 import { app } from "@/firebase";
 import { toast } from "sonner";
-import { updateStart, updateFailure, updateSuccess } from "@/redux/user/userSlice";
+import {
+  updateStart,
+  updateFailure,
+  updateSuccess,
+} from "@/redux/user/userSlice";
 import { UpdateFormData, UpdateFormSchema } from "@/schemas/UpdateFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm, FieldValues } from "react-hook-form";
@@ -48,32 +52,35 @@ const UserProfile = () => {
     handleSubmit,
     formState: { errors },
     setValue,
-    trigger
-  } = useForm<UpdateFormData>({ resolver: zodResolver(UpdateFormSchema), defaultValues: {
-    name: currentUser?.name || '',
-      username: currentUser?.username || '',
-      email: currentUser?.email || '',
-      accountType: currentUser?.accountType || '', 
-      phone: currentUser?.phone || '',
-      address: currentUser?.address || '',
-      city: currentUser?.city || '',
-      pincode: currentUser?.pincode || '',
-      profilePicture: currentUser?.profilePicture || '',
-  }});
+    trigger,
+  } = useForm<UpdateFormData>({
+    resolver: zodResolver(UpdateFormSchema),
+    defaultValues: {
+      name: currentUser?.name || "",
+      username: currentUser?.username || "",
+      email: currentUser?.email || "",
+      accountType: currentUser?.accountType || "",
+      phone: currentUser?.phone || "",
+      address: currentUser?.address || "",
+      city: currentUser?.city || "",
+      pincode: currentUser?.pincode || "",
+      profilePicture: currentUser?.profilePicture || "",
+    },
+  });
 
   const [updateUserSuccess, setUpdateUserSuccess] = useState<string | null>(
     null
   );
-  const [updateUserError, setUpdateUserError ] = useState<string | null>(null);
+  const [updateUserError, setUpdateUserError] = useState<string | null>(null);
 
   const dispatch = useDispatch();
 
-  const [accountType, setAccountType] = useState("");
+  const [accountType, setAccountType] = useState<accountTypes>();
 
   const handleAccountTypeChange = (value: accountTypes) => {
     setAccountType(value);
-    setValue("accountType", value); 
-    trigger("accountType"); 
+    setValue("accountType", value);
+    trigger("accountType");
   };
 
   const [imageFile, setImageFile] = useState<null | File>(null);
@@ -125,7 +132,7 @@ const UserProfile = () => {
             setImageFileURL(downloadURL);
             setValue("profilePicture", downloadURL);
           });
-          toast.success('Profile Picture uploaded successfully')
+          toast.success("Profile Picture uploaded successfully");
           setImageFileUploadProgress(null);
           setImageFile(null);
           setImageFileURL(null);
@@ -137,28 +144,36 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (values: z.infer<typeof UpdateFormSchema>) => {
-    if(!currentUser) {
-      console.log('currentUser is null');
+    if (!currentUser) {
+      console.log("currentUser is null");
       return;
     }
     console.log("Current user:", currentUser);
-    const formValuesChanged = Object.keys(values).some(
-      key => {
-        console.log("Current value:", values[key as keyof typeof values]);
-            console.log("Initial value:", currentUser[key as keyof typeof currentUser]);
-            console.log("Comparison result:", values[key as keyof typeof values] !== currentUser[key as keyof typeof currentUser]);
-            return values[key as keyof typeof values] !== currentUser[key as keyof typeof currentUser];
-      }
-  );
+    const formValuesChanged = Object.keys(values).some((key) => {
+      console.log("Current value:", values[key as keyof typeof values]);
+      console.log(
+        "Initial value:",
+        currentUser[key as keyof typeof currentUser]
+      );
+      console.log(
+        "Comparison result:",
+        values[key as keyof typeof values] !==
+          currentUser[key as keyof typeof currentUser]
+      );
+      return (
+        values[key as keyof typeof values] !==
+        currentUser[key as keyof typeof currentUser]
+      );
+    });
 
-  setUpdateUserError(null);
-  setUpdateUserSuccess(null);
+    setUpdateUserError(null);
+    setUpdateUserSuccess(null);
 
-  if (!formValuesChanged) {
-      setUpdateUserError('No changes made');
-      toast.error('No changes made', { duration: 3000 });
+    if (!formValuesChanged) {
+      setUpdateUserError("No changes made");
+      toast.error("No changes made", { duration: 3000 });
       return;
-  }
+    }
 
     try {
       dispatch(updateStart());
@@ -174,18 +189,18 @@ const UserProfile = () => {
       if (!res.ok) {
         dispatch(updateFailure(data.message));
         setUpdateUserError(data.message);
-        toast.error(updateUserError, {duration: 3000});
+        toast.error(updateUserError, { duration: 3000 });
         setLoading(false);
       } else {
         dispatch(updateSuccess(data));
         setUpdateUserSuccess("User updated successfully!!");
-        toast.success(updateUserSuccess, {duration: 3000})
+        toast.success(updateUserSuccess, { duration: 3000 });
         setLoading(false);
       }
     } catch (error) {
       dispatch(updateFailure((error as Error).message));
       setUpdateUserError((error as Error).message);
-      toast.error(updateUserError, {duration: 3000});
+      toast.error(updateUserError, { duration: 3000 });
       setLoading(false);
     }
   };
@@ -196,11 +211,14 @@ const UserProfile = () => {
         <h1 className="text-3xl font-semibold text-center ">
           Personal Information
         </h1>
-        <form className="text-orange-950" onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>)}>
+        <form
+          className="text-orange-950"
+          onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>)}
+        >
           <Input
             type="file"
             accept="image/*"
-            {...register('profilePicture')}
+            {...register("profilePicture")}
             onChange={handleImageChange}
             ref={filePickerRef}
             className="hidden"
@@ -240,7 +258,11 @@ const UserProfile = () => {
                 "opacity-60"
               }`}
             />
-            {errors.profilePicture && <span className="text-xs text-red-500">{errors.profilePicture.message}</span>}
+            {errors.profilePicture && (
+              <span className="text-xs text-red-500">
+                {errors.profilePicture.message}
+              </span>
+            )}
           </div>
           <p className="flex items-center justify-center mb-6 font-semibold text-sm">
             *Change your photo by clicking on the avatar above*
@@ -268,9 +290,13 @@ const UserProfile = () => {
                     id="name"
                     placeholder="Enter your full name"
                     defaultValue={currentUser?.name}
-                    {...register('name')}
+                    {...register("name")}
                   />
-                  {errors.name && <span className="text-xs text-red-500">{errors.name.message}</span>}
+                  {errors.name && (
+                    <span className="text-xs text-red-500">
+                      {errors.name.message}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
                   <Label>Username</Label>
@@ -278,9 +304,13 @@ const UserProfile = () => {
                     id="username"
                     placeholder="Enter a unique username"
                     defaultValue={currentUser?.username}
-                    {...register('username')}
+                    {...register("username")}
                   />
-                  {errors.username && <span className="text-xs text-red-500">{errors.username.message}</span>}
+                  {errors.username && (
+                    <span className="text-xs text-red-500">
+                      {errors.username.message}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
                   <Label>Email</Label>
@@ -289,16 +319,20 @@ const UserProfile = () => {
                     type="email"
                     defaultValue={currentUser?.email}
                     placeholder="Enter your email address"
-                    {...register('email')}
+                    {...register("email")}
                   />
-                  {errors.email && <span className="text-xs text-red-500">{errors.email.message}</span>}
+                  {errors.email && (
+                    <span className="text-xs text-red-500">
+                      {errors.email.message}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
                   <Label>Account Type</Label>
                   <Select
-                  onValueChange={handleAccountTypeChange}
-                  {...register('accountType')}
-                  value={accountType}
+                    onValueChange={handleAccountTypeChange}
+                    {...register("accountType")}
+                    value={accountType}
                   >
                     <SelectTrigger
                       id="accountType"
@@ -312,7 +346,11 @@ const UserProfile = () => {
                       <SelectItem value="business">Business</SelectItem>
                     </SelectContent>
                   </Select>
-                  {errors.accountType && <span className="text-xs text-red-500">{errors.accountType.message}</span>}
+                  {errors.accountType && (
+                    <span className="text-xs text-red-500">
+                      {errors.accountType.message}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
                   <Label>Phone Number</Label>
@@ -320,9 +358,13 @@ const UserProfile = () => {
                     id="phone"
                     placeholder="Enter your phone number"
                     defaultValue={currentUser?.phone}
-                    {...register('phone')}
+                    {...register("phone")}
                   />
-                  {errors.phone && <span className="text-xs text-red-500">{errors.phone.message}</span>}
+                  {errors.phone && (
+                    <span className="text-xs text-red-500">
+                      {errors.phone.message}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
                   <Label>Address Line 1</Label>
@@ -330,9 +372,13 @@ const UserProfile = () => {
                     id="address"
                     placeholder="Enter your address"
                     defaultValue={currentUser?.address}
-                    {...register('address')}
+                    {...register("address")}
                   />
-                  {errors.address && <span className="text-xs text-red-500">{errors.address.message}</span>}
+                  {errors.address && (
+                    <span className="text-xs text-red-500">
+                      {errors.address.message}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
                   <Label>City</Label>
@@ -340,9 +386,13 @@ const UserProfile = () => {
                     id="city"
                     placeholder="Enter your city"
                     defaultValue={currentUser?.city}
-                    {...register('city')}
+                    {...register("city")}
                   />
-                  {errors.city && <span className="text-xs text-red-500">{errors.city.message}</span>}
+                  {errors.city && (
+                    <span className="text-xs text-red-500">
+                      {errors.city.message}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col space-y-1.5 w-full">
                   <Label>Pincode</Label>
@@ -350,9 +400,13 @@ const UserProfile = () => {
                     id="pincode"
                     placeholder="Enter your Pincode"
                     defaultValue={currentUser?.pincode}
-                    {...register('pincode')}
+                    {...register("pincode")}
                   />
-                  {errors.pincode && <span className="text-xs text-red-500">{errors.pincode.message}</span>}
+                  {errors.pincode && (
+                    <span className="text-xs text-red-500">
+                      {errors.pincode.message}
+                    </span>
+                  )}
                 </div>
               </div>
               {/* </form> */}
@@ -365,10 +419,10 @@ const UserProfile = () => {
                 disabled={loading}
               >
                 {loading ? (
-                    <AiOutlineLoading className="h-4 w-4" />
-                  ) : (
-                    <span className="text-[15px]">Update</span>
-                  )}
+                  <AiOutlineLoading className="h-4 w-4" />
+                ) : (
+                  <span className="text-[15px]">Update</span>
+                )}
               </Button>
             </CardFooter>
           </Card>
