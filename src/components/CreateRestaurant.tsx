@@ -29,18 +29,18 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Separator } from "./ui/separator";
-import { Checkbox } from "./ui/checkbox";
-import { cuisineList } from "@/config/restaurant-config";
 import MenuSection from "./MenuSection";
 import {
   setRestaurantFailure,
   setRestaurantStart,
   setRestaurantSuccess,
 } from "@/redux/restaurant/restaurantSlice";
+import CuisineSection from "./CuisineSection";
 
 const CreateRestaurant = () => {
   const { restaurant } = useSelector((state: RootState) => state.restaurant);
   const { menuItems } = useSelector((state: RootState) => state.menu);
+  const { selectedCuisines} = useSelector((state: RootState) => state.cuisine);
 
   const {
     register,
@@ -48,8 +48,6 @@ const CreateRestaurant = () => {
     formState: { errors },
     setValue,
   } = useForm<RestaurantData>({ resolver: zodResolver(RestaurantSchema) });
-
-  // console.log("Menu Items:", menuItems);
 
   const dispatch = useDispatch();
 
@@ -111,12 +109,10 @@ const CreateRestaurant = () => {
     }
   };
 
-  const onSubmit = async (
-    values: z.infer<typeof RestaurantSchema>,
-  ) => {
+  const onSubmit = async (values: z.infer<typeof RestaurantSchema>) => {
     console.log("Submitting form:", values);
     try {
-      console.log('Submitting form:', values);
+      console.log("Submitting form:", values);
       dispatch(setRestaurantStart());
       const {
         restaurantName,
@@ -124,7 +120,6 @@ const CreateRestaurant = () => {
         location,
         deliveryPrice,
         estimatedDeliveryTime,
-        cuisines,
         owner,
       } = values;
 
@@ -134,19 +129,19 @@ const CreateRestaurant = () => {
         estimatedDeliveryTime,
         imageUrl,
         deliveryPrice,
-        cuisines,
+        cuisines: selectedCuisines,
         menu: menuItems,
         owner,
       };
 
-      const res = await fetch('/api/my_restaurant/createRestaurant', {
+      const res = await fetch("/api/my_restaurant/createRestaurant", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(restaurantData),
       });
-      console.log('restaurant data:', restaurantData)
+      console.log("restaurant data:", restaurantData);
       const data = await res.json();
       if (!res.ok) {
         dispatch(setRestaurantFailure(data.message));
@@ -154,7 +149,7 @@ const CreateRestaurant = () => {
       } else {
         dispatch(setRestaurantSuccess(data));
         toast.success("Restaurant created successfully!", { duration: 3000 });
-        console.log('restaurant:', restaurant);
+        console.log("restaurant:", restaurant);
       }
     } catch (error) {
       dispatch(setRestaurantFailure((error as Error).message));
@@ -163,11 +158,8 @@ const CreateRestaurant = () => {
   };
 
   const onError = (errors: FieldErrors<RestaurantData>) => {
-    console.log('Form Errors: ', errors)
-  }
-
-//   const handleSubmitForm = handleSubmit(onSubmit as SubmitHandler<FieldValues>);
-// console.log('handleSubmitForm:', handleSubmitForm);
+    console.log("Form Errors: ", errors);
+  };
 
   return (
     <div className="flex flex-col justify-center items-center max-w-6xl w-full mx-auto">
@@ -324,24 +316,7 @@ const CreateRestaurant = () => {
                     Please select from the below options
                   </p>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-5">
-                  {cuisineList.map((cuisine, index) => (
-                    <div key={index} className="flex items-center">
-                      <Checkbox
-                        {...register(`cuisines.${index}`)}
-                        id={`cuisine-${index}`}
-                      />
-                      <label htmlFor={`cuisine-${index}`} className="ml-2">
-                        {cuisine}
-                      </label>
-                    </div>
-                  ))}
-                  {errors.cuisines && (
-                    <span className="text-red-600">
-                      At least one cuisine must be selected.
-                    </span>
-                  )}
-                </div>
+                <CuisineSection />
               </div>
 
               <div className="my-8">
