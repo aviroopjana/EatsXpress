@@ -36,6 +36,7 @@ import {
   setRestaurantSuccess,
 } from "@/redux/restaurant/restaurantSlice";
 import CuisineSection from "./CuisineSection";
+import { updateRestaurantId } from "@/redux/user/userSlice";
 
 const CreateRestaurant = () => {
   const { restaurant } = useSelector((state: RootState) => state.restaurant);
@@ -149,6 +150,7 @@ const CreateRestaurant = () => {
       } else {
         dispatch(setRestaurantSuccess(data));
         toast.success("Restaurant created successfully!", { duration: 3000 });
+        dispatch(updateRestaurantId(data.restaurant._id))
         console.log("restaurant:", restaurant);
       }
     } catch (error) {
