@@ -7,9 +7,7 @@ const MenuSchema = z.object({
   price: z.number(),
 });
 
-const CuisineSchema = z.object({
-  cuisines: z.array(z.string()),
-});
+const CuisineSchema = z.array(z.string().optional());
 
 const RestaurantSchema = z.object({
   restaurantName: z.string(),
