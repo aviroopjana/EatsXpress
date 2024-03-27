@@ -148,7 +148,7 @@ const CreateRestaurant = () => {
         dispatch(setRestaurantFailure(data.message));
         toast.error(data.message, { duration: 3000 });
       } else {
-        dispatch(setRestaurantSuccess(data));
+        dispatch(setRestaurantSuccess(data.restaurant));
         toast.success("Restaurant created successfully!", { duration: 3000 });
         dispatch(updateRestaurantId(data.restaurant._id))
         console.log("restaurant:", restaurant);
