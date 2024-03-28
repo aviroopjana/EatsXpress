@@ -12,7 +12,7 @@ import { addMenuItem, removeMenuItem } from "@/redux/restaurant/menuSlice";
 import { RootState } from "@/redux/store";
 import { v4 as uuidv4 } from 'uuid';
 
-export type MenuItem = z.infer<typeof MenuSchema>;
+export type IMenuItem = z.infer<typeof MenuSchema>;
 
 const MenuSection = () => {
   const {
@@ -33,26 +33,26 @@ const MenuSection = () => {
   const [itemDescription, setItemDescription] = useState("");
   const [itemPrice, setItemPrice] = useState("");
 
-  const [addedItems, setAddedItems] = useState<MenuItem[]>(menuItems);
+  const [addedItems, setAddedItems] = useState<IMenuItem[]>(menuItems);
 
   const dispatch = useDispatch();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newProductId = uuidv4();
-    const menuItem: MenuItem = {
+    const menuItem: IMenuItem = {
       name: itemName,
       productId: newProductId,
       description: itemDescription || undefined,
       price: parseFloat(itemPrice),
     };
-    dispatch(addMenuItem(menuItem));
+    dispatch(addMenuItem([menuItem]));
     // Reset form fields
     setItemName("");
     setItemDescription("");
     setItemPrice("");
-    // setAddedItems([...addedItems, menuItem]);
-    setAddedItems([...addedItems, { ...menuItem, productId: newProductId }]);
+    setAddedItems([...addedItems, menuItem]);
+    // setAddedItems([...addedItems, { ...menuItem, productId: newProductId }]);
   };
 
   // const removeItem = (itemToRemove: MenuItem) => {

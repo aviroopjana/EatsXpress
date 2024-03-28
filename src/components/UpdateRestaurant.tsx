@@ -143,7 +143,7 @@ const UpdateRestaurant = () => {
       };
 
       const res = await fetch(
-        `/api/my_restaurant/updateRestaurant/${restaurant?.restaurant._id}`,
+        `/api/my_restaurant/updateRestaurant/${restaurant?._id}`,
         {
           method: "PUT",
           headers: {
@@ -163,6 +163,7 @@ const UpdateRestaurant = () => {
         console.log("restaurant:", restaurant);
       }
     } catch (error) {
+      console.log(error);
       dispatch(setRestaurantFailure((error as Error).message));
       toast.error((error as Error).message, { duration: 3000 });
     }
@@ -222,9 +223,9 @@ const UpdateRestaurant = () => {
               </Button>
             </div>
             {imageFileUploadError && toast.error(imageFileUploadError)}
-            {imageFileURL && (
+            {restaurant?.imageUrl && (
               <img
-                src={imageFileURL}
+                src={imageFileURL || restaurant?.imageUrl}
                 alt="upload"
                 className="w-full h-72 object-contain"
               />

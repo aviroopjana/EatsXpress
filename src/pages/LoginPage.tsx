@@ -15,9 +15,20 @@ import { useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { signInFailure, signInStart, signInSuccess } from "@/redux/user/userSlice";
+import {
+  signInFailure,
+  signInStart,
+  signInSuccess,
+} from "@/redux/user/userSlice";
 import OAuth from "@/components/OAuth";
 import { toast } from "sonner";
+import {
+  setRestaurantFailure,
+  setRestaurantStart,
+  setRestaurantSuccess,
+} from "@/redux/restaurant/restaurantSlice";
+import { selectCuisine } from "@/redux/restaurant/cuisineSlice";
+import { addMenuItem } from "@/redux/restaurant/menuSlice";
 
 interface FormData {
   username: string;
@@ -32,12 +43,39 @@ const LoginPage = () => {
 
   const dispatch = useDispatch();
 
-  const {error: errorMessage, loading} = useSelector((state: RootState) => state.user);
+  const { error: errorMessage, loading } = useSelector(
+    (state: RootState) => state.user
+  );
 
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
+  };
+
+  const fetchRestaurant = async () => {
+    try {
+      dispatch(setRestaurantStart());
+      const res = await fetch("/api/my_restaurant/getRestaurant", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        dispatch(setRestaurantFailure(data.message));
+        // toast.error(data.message);
+      } else {
+        dispatch(setRestaurantSuccess(data.restaurantDetails));
+        dispatch(selectCuisine(data.restaurantDetails.cuisines));
+        dispatch(addMenuItem(data.restaurantDetails.menu));
+        console.log(data);
+        // toast.success("Restaurant details get successfully!", { duration: 3000 });
+      }
+    } catch (error) {
+      dispatch(setRestaurantFailure(error as string));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -51,16 +89,21 @@ const LoginPage = () => {
         },
         body: JSON.stringify(formData),
       });
-  
+
       if (!res.ok) {
         const errorData = await res.json();
-        dispatch(signInFailure(errorData.message || "An error occurred during sign-in."));
+        dispatch(
+          signInFailure(
+            errorData.message || "An error occurred during sign-in."
+          )
+        );
         toast.error(errorMessage);
       } else {
         const userData = await res.json();
         console.log(userData);
         dispatch(signInSuccess(userData));
-        toast.success('Login Successful!', { duration: 4000 });
+        toast.success("Login Successful!", { duration: 4000 });
+        fetchRestaurant();
         // if (userData.accountType === 'business') {
         //   dispatch(updateRestaurantId(userData.restaurantId));
         // }
@@ -70,7 +113,6 @@ const LoginPage = () => {
       dispatch(signInFailure(error as string));
     }
   };
-  
 
   return (
     <div className="bg-gradient-to-b from-[#f4c541] to-transparent">
@@ -91,25 +133,25 @@ const LoginPage = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                  <div className="flex flex-col w-full items-center gap-4">
-                    <div className="flex flex-col space-y-1.5 w-full">
-                      <Label>Username</Label>
-                      <Input
-                        id="username"
-                        placeholder="Enter a your username"
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="flex flex-col space-y-1.5 w-full">
-                      <Label>Password</Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        placeholder="Enter your password"
-                        onChange={handleChange}
-                      />
-                    </div>
+                <div className="flex flex-col w-full items-center gap-4">
+                  <div className="flex flex-col space-y-1.5 w-full">
+                    <Label>Username</Label>
+                    <Input
+                      id="username"
+                      placeholder="Enter a your username"
+                      onChange={handleChange}
+                    />
                   </div>
+                  <div className="flex flex-col space-y-1.5 w-full">
+                    <Label>Password</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Enter your password"
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
               </CardContent>
               <CardFooter className="flex flex-col justify-center items-center gap-2">
                 <Button className="w-full" type="submit" variant={"default"}>
@@ -122,7 +164,7 @@ const LoginPage = () => {
                 <div className="flex items-center">
                   <span className="mx-4">OR</span>
                 </div>
-                <OAuth/>
+                <OAuth />
                 <div className="flex flex-row gap-2">
                   <p className="text-gray-500 dark:text-gray-300 font-medium">
                     New to EatsXpress?
