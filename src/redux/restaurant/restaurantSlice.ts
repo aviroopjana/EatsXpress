@@ -53,12 +53,19 @@ const restaurantSlice = createSlice({
       state.success = false;
       state.error = action.payload;
     },
+    clearRestaurant: (state) => {
+      state.restaurant = null;
+      state.loading = false;
+      state.success = false;
+      state.error = null;
+    },
   },
 });
 
 export const {
   setRestaurantStart,
   setRestaurantSuccess,
-  setRestaurantFailure
+  setRestaurantFailure,
+  clearRestaurant
 } = restaurantSlice.actions;
 export default restaurantSlice.reducer;

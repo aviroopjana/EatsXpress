@@ -17,6 +17,9 @@ import { toast } from "sonner";
 import { BiLogOut } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
+import { clearMenu } from "@/redux/restaurant/menuSlice";
+import { clearCuisines } from "@/redux/restaurant/cuisineSlice";
+import { clearRestaurant } from "@/redux/restaurant/restaurantSlice";
 
 interface UserDropdownMenuProps {
   isOpen: boolean;
@@ -41,6 +44,9 @@ const UserDropdownMenu: FC<UserDropdownMenuProps> = ({
         console.log(data.message);
       } else {
         dispatch(signoutSuccess());
+        dispatch(clearMenu());
+        dispatch(clearCuisines());
+        dispatch(clearRestaurant());
         toast.success("Signout Successful!", { duration: 4000 });
       }
     } catch (err) {
@@ -90,7 +96,7 @@ const UserDropdownMenu: FC<UserDropdownMenuProps> = ({
                   to={"/manage-restaurant"}
                 >
                   Manage Restaurant
-                  <MdOutlineRestaurantMenu size={20}/>
+                  <MdOutlineRestaurantMenu size={20} />
                 </Link>
               </DropdownMenuItem>
             )}
