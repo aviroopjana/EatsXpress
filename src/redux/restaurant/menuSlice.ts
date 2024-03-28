@@ -19,8 +19,8 @@ const menuSlice = createSlice({
   name: "menu",
   initialState,
   reducers: {
-    addMenuItem: (state, action: PayloadAction<IMenuItem>) => {
-      state.menuItems.push(action.payload);
+    addMenuItem: (state, action: PayloadAction<IMenuItem[]>) => {
+      state.menuItems.push(...action.payload);
     },
     removeMenuItem: (state, action: PayloadAction<string>) => {
       state.menuItems = state.menuItems.filter(item => item.productId !== action.payload);
