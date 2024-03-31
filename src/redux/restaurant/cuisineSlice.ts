@@ -14,11 +14,6 @@ const cuisineSlice = createSlice({
   reducers: {
     selectCuisine(state, action: PayloadAction<string>) {
       const cuisine = action.payload;
-      // cuisines.forEach(cuisine => {
-      //   if (!state.selectedCuisines.includes(cuisine)) {
-      //     state.selectedCuisines.push(cuisine);
-      //   }
-      // });
       if (!state.selectedCuisines.includes(cuisine)) {
         state.selectedCuisines.push(cuisine);
       }
