@@ -3,13 +3,8 @@ import { Checkbox } from "./ui/checkbox";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { deselectCuisine, selectCuisine } from "@/redux/restaurant/cuisineSlice";
-import { useForm } from "react-hook-form";
-import { CuisineSchema, cuisineData } from "@/schemas/RestaurantSchema";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 const CuisineSection = () => {
-
-  const { register, formState: {errors}} = useForm<cuisineData>({resolver: zodResolver(CuisineSchema)});
 
   const { selectedCuisines} = useSelector((state: RootState) => state.cuisine);
 
@@ -35,27 +30,12 @@ const CuisineSection = () => {
           >
             <Checkbox
               className="bg-white"
-              {...register('cuisines')}
               checked={selectedCuisines.includes(cuisine)}
-              // onCheckedChange={(checked) => {
-              //   handleCheckboxChange(cuisine);
-              //   // Update form state with the selected cuisines
-              //   const updatedCuisines = checked
-              //     ? [...selectedCuisines, cuisine]
-              //     : selectedCuisines.filter((item) => item !== cuisine);
-              //   register(`cuisines`, { required: true });
-              //   setSelectedCuisines(updatedCuisines);
-              // }}
               onCheckedChange={() => handleCheckboxChange(cuisine)}
             />
             <label className="text-sm font-normal">{cuisine}</label>
           </div>
         ))}
-        {errors.cuisines && (
-          <span className="text-red-600">
-            At least one cuisine must be selected.
-          </span>
-        )}
       </div>
     </div>
   );
