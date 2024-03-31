@@ -41,7 +41,6 @@ const UpdateRestaurant = () => {
   const { restaurant }: RootState["restaurant"] = useSelector((state: RootState) => state.restaurant);
   const { menuItems } = useSelector((state: RootState) => state.menu);
   const { selectedCuisines } = useSelector((state: RootState) => state.cuisine);
-
   const {
     register,
     handleSubmit,

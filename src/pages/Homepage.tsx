@@ -1,8 +1,20 @@
 import { Input } from "@/components/ui/input";
 import backgroundBanner from "@/assets/background-banner.jpg";
+import searchbackground from "@/assets/search-back2.jpg";
 import { Button } from "@/components/ui/button";
+import SearchBar, { SearchForm } from "@/components/SearchBar";
+import { useNavigate } from "react-router-dom";
 
 const Homepage = () => {
+
+  const navigate = useNavigate();
+
+  const handleSearchSubmit = (searchFormValues: SearchForm) => {
+    navigate({
+      pathname: `/search/${searchFormValues.searchQuery}`,
+    });
+  };
+
   return (
     <div className="relative">
       <img
@@ -33,6 +45,22 @@ const Homepage = () => {
             </Button>
           </div>
         </div>
+      </div>
+      {/* Search Section */}
+      <div className="relative">
+        
+      <img
+        src={searchbackground}
+        alt="background"
+        className="object-cover h-[750px] w-full"
+      />
+        <div className="h-screen mx-auto p-5 absolute inset-0 mt-28">
+        <h1 className="flex items-center justify-center text-4xl font-bold text-orange-600">Explore Local Flavors Near You</h1>
+        <p className="flex items-center justify-center max-w-3xl mx-auto my-8 font-semibold text-lg text-white">Dive into the vibrant culinary scene of your area and uncover hidden gems waiting to be savored. Whether you're a food enthusiast or a casual diner, there's something delightful for every palate. Begin your gastronomic exploration by searching for restaurants in your city or town.</p>
+        <div className="items-center justify-center mt-6">
+          <SearchBar placeHolder="Search by city or town" onSubmit={handleSearchSubmit}/>
+        </div>
+      </div>
       </div>
     </div>
   );
