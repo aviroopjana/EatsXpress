@@ -6,7 +6,7 @@ import { deselectCuisine, selectCuisine } from "@/redux/restaurant/cuisineSlice"
 
 const CuisineSection = () => {
 
-  const { selectedCuisines} = useSelector((state: RootState) => state.cuisine);
+  const { selectedCuisines } = useSelector((state: RootState) => state.cuisine);
 
   const dispatch = useDispatch();
 
@@ -14,7 +14,7 @@ const CuisineSection = () => {
     if (selectedCuisines.includes(cuisine)) {
       dispatch(deselectCuisine(cuisine));
     } else {
-      dispatch(selectCuisine(cuisine));
+      dispatch(selectCuisine([cuisine])); 
     }
   };
 
