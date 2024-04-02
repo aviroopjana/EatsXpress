@@ -58,7 +58,7 @@ const Homepage = () => {
         <h1 className="flex items-center justify-center text-4xl font-bold text-orange-600">Explore Local Flavors Near You</h1>
         <p className="flex items-center justify-center max-w-3xl mx-auto my-8 font-semibold text-lg text-white">Dive into the vibrant culinary scene of your area and uncover hidden gems waiting to be savored. Whether you're a food enthusiast or a casual diner, there's something delightful for every palate. Begin your gastronomic exploration by searching for restaurants in your city or town.</p>
         <div className="items-center justify-center mt-6">
-          <SearchBar placeHolder="Search by city or town" onSubmit={handleSearchSubmit}/>
+          <SearchBar placeHolder="Search by city or town" onSubmit={handleSearchSubmit} isHomePage={true}/>
         </div>
       </div>
       </div>

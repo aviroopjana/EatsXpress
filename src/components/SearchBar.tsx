@@ -20,9 +20,16 @@ type Props = {
   placeHolder: string;
   onReset?: () => void;
   searchQuery?: string;
+  isHomePage?: boolean;
 };
 
-const SearchBar = ({ onSubmit, onReset, placeHolder, searchQuery }: Props) => {
+const SearchBar = ({
+  onSubmit,
+  onReset,
+  placeHolder,
+  searchQuery,
+  isHomePage,
+}: Props) => {
   const form = useForm<SearchForm>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -31,6 +38,7 @@ const SearchBar = ({ onSubmit, onReset, placeHolder, searchQuery }: Props) => {
   });
 
   useEffect(() => {
+    console.log("Resetting form with searchQuery:", searchQuery);
     form.reset({ searchQuery });
   }, [form, searchQuery]);
 
@@ -50,7 +58,7 @@ const SearchBar = ({ onSubmit, onReset, placeHolder, searchQuery }: Props) => {
         onSubmit={form.handleSubmit(onSubmit)}
         className={`flex items-center gap-3 justify-center max-w-3xl mx-auto flex-row border-2 rounded-full p-3 ${
           form.formState.errors.searchQuery && "border-red-500"
-        }`}
+        } focus-within:ring-2 ${isHomePage ? 'border-orange-600 focus-within:ring-orange-600' : 'border-orange-800 focus-within:ring-orange-500'}`}
       >
         <Search
           strokeWidth={2.5}
@@ -65,7 +73,11 @@ const SearchBar = ({ onSubmit, onReset, placeHolder, searchQuery }: Props) => {
               <FormControl>
                 <Input
                   {...field}
-                  className="border-none shadow-none text-xl focus-visible:ring-0 text-white placeholder-white"
+                  className={`border-none shadow-none text-xl focus-visible:ring-0 ${
+                    isHomePage
+                      ? "text-white placeholder:text-white"
+                      : "text-black placeholder:text-slate-800"
+                  }`}
                   placeholder={placeHolder}
                 />
               </FormControl>
@@ -81,7 +93,7 @@ const SearchBar = ({ onSubmit, onReset, placeHolder, searchQuery }: Props) => {
         >
           Reset
         </Button>
-        <Button type="submit" className="rounded-full bg-orange-500">
+        <Button type="submit" className="rounded-full bg-orange-500 hover:bg-orange-700">
           Search
         </Button>
       </form>
