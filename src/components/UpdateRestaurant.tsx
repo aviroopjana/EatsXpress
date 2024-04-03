@@ -119,7 +119,8 @@ const UpdateRestaurant = () => {
   const onSubmit = async (values: z.infer<typeof RestaurantSchema>) => {
     console.log("Submitting form:", values);
     try {
-      console.log("Submitting form:", values);
+      // console.log("Submitting form:", values);
+      console.log('try cuisines', selectedCuisines);
       dispatch(setRestaurantStart());
       const {
         restaurantName,
@@ -155,8 +156,10 @@ const UpdateRestaurant = () => {
       const data = await res.json();
       if (!res.ok) {
         dispatch(setRestaurantFailure(data.message));
+        console.log('code is in 1');
         toast.error(data.message, { duration: 3000 });
       } else {
+        console.log('code is here');
         dispatch(setRestaurantSuccess(data.restaurant));
         toast.success("Restaurant updated successfully!", { duration: 3000 });
         console.log("restaurant:", restaurant);
