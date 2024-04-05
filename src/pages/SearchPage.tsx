@@ -1,4 +1,5 @@
 import { useSearchRestaurants } from "@/api/restaurant_api";
+import CuisineFilter from "@/components/CuisineFilter";
 import PaginationSelector from "@/components/PaginationSelect";
 import SearchBar, { SearchForm } from "@/components/SearchBar";
 import SearchResultsCard from "@/components/SearchResultsCard";
@@ -25,10 +26,20 @@ const SearchPage = () => {
 
   const { results, isLoading } = useSearchRestaurants(searchState, city);
 
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+
   const setSearchQuery = (searchFormData: SearchForm) => {
     setSearchState((prevState: SearchState) => ({
       ...prevState,
       searchQuery: searchFormData.searchQuery,
+    }));
+  };
+
+  const setSelectedCuisines = (selectedCuisines: string[]) => {
+    setSearchState((prevState) => ({
+      ...prevState,
+      selectedCuisines,
+      page: 1,
     }));
   };
 
@@ -59,7 +70,16 @@ const SearchPage = () => {
     <div className="bg-gradient-to-b from-[#f4c541] to-transparent">
       <div className="max-w-6xl mx-auto min-h-screen h-auto p-5">
         <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
-          <div id="cuisine-list">Cuisine List here</div>
+          <div id="cuisine-list">
+          <CuisineFilter
+          selectedCuisines={searchState.selectedCuisines}
+          onChange={setSelectedCuisines}
+          isExpanded={isExpanded}
+          onExpandedClick={() =>
+            setIsExpanded((prevIsExpanded) => !prevIsExpanded)
+          }
+        />
+          </div>
           <div id="main-section" className="flex flex-col gap-5">
             <div className="w-full">
               <SearchBar
