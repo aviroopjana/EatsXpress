@@ -17,7 +17,7 @@ export type Restaurant = {
   deliveryPrice: number;
   imageUrl: string;
   cuisines: string[];
-  menuItems: MenuItem[];
+  menu: MenuItem[];
   createdAt: string;
   updatedAt: string;
 };
