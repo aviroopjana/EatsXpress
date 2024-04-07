@@ -1,9 +1,7 @@
 import { useGetRestaurant } from "@/api/restaurant_api";
 import MenuItemComponent from "@/components/MenuItem";
-import OrderSummary from "@/components/OrderSummary";
 import RestaurantInfo from "@/components/RestaurantInfo";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Card, CardFooter } from "@/components/ui/card";
 import { addToCart } from "@/redux/cart/cartSlice";
 import { MenuItem } from "@/types";
 import { useDispatch } from "react-redux";
@@ -35,7 +33,7 @@ const DetailsPage = () => {
     return "Loading...";
   }
 
-  console.log(restaurant);
+  // console.log(restaurant);
 
   return (
     <div className="bg-gradient-to-b from-[#f4c541] to-transparent">
@@ -60,12 +58,6 @@ const DetailsPage = () => {
                 ))}
             </div>
             <div>
-              <Card className="bg-[#fef3c7] rounded-xl shadow-2xl border-yellow-600">
-                <OrderSummary restaurant={restaurant} />
-                <CardFooter>
-                 {/*To Do: Check Out Button */}
-                </CardFooter>
-              </Card>
             </div>
           </div>
         </div>

@@ -9,6 +9,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import ManageRestaurant from "./components/ManageRestaurant";
 import SearchPage from "./pages/SearchPage";
 import DetailsPage from "./pages/DetailsPage";
+import CartDetails from "./pages/CartDetails";
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/manage-restaurant" element={<ManageRestaurant />} />
         </Route>
         <Route path="/detail/:restaurantId" element={<DetailsPage />} />
+        <Route path="/cartdetail/:restaurantId" element={<CartDetails />} />
       </Routes>
       <Footer />
     </BrowserRouter>
