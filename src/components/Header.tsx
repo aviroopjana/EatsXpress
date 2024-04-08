@@ -37,6 +37,17 @@ const Header = () => {
 
   const cartItemCount = items.length;
 
+  const handleIconClick = () => {
+    navigate("/");
+
+    setTimeout(() => {
+      const searchSection = document.getElementById("searchSection");
+      if (searchSection) {
+        searchSection.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100);
+  };
+
   return (
     <div className="bg-gradient-to-r from-[#fed754] to-[#edbd41] ">
       <div className="max-w-6xl mx-auto py-2 md:py-5 ">
@@ -65,7 +76,11 @@ const Header = () => {
           </div>
           <div className="hidden sm:flex flex-row gap-2">
             <div className="flex flex-row mr-10 items-center">
-              <Button variant={"ghost"} className="hover:bg-transparent">
+              <Button
+                variant={"ghost"}
+                className="hover:bg-transparent"
+                onClick={handleIconClick}
+              >
                 <CiSearch size={25} />
               </Button>
               <Button

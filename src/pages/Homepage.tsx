@@ -47,7 +47,7 @@ const Homepage = () => {
         </div>
       </div>
       {/* Search Section */}
-      <div className="relative">
+      <div className="relative" id="searchSection">
         
       <img
         src={searchbackground}
