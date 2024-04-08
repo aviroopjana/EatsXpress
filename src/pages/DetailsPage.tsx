@@ -45,7 +45,7 @@ const DetailsPage = () => {
               src={restaurant.imageUrl}
             />
           </AspectRatio>
-          <div className="grid md:grid-cols-[4fr_2fr] gap-4">
+          <div className="max-w-3xl mx-auto">
             <div className="flex flex-col gap-4">
               <RestaurantInfo restaurant={restaurant} />
               <span className="text-2xl font-bold tracking-tight">Menu</span>
