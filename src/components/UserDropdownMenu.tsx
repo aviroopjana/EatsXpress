@@ -20,6 +20,7 @@ import { MdOutlineRestaurantMenu } from "react-icons/md";
 import { clearMenu } from "@/redux/restaurant/menuSlice";
 import { clearCuisines } from "@/redux/restaurant/cuisineSlice";
 import { clearRestaurant } from "@/redux/restaurant/restaurantSlice";
+import { clearCart } from "@/redux/cart/cartSlice";
 
 interface UserDropdownMenuProps {
   isOpen: boolean;
@@ -47,6 +48,7 @@ const UserDropdownMenu: FC<UserDropdownMenuProps> = ({
         dispatch(clearMenu());
         dispatch(clearCuisines());
         dispatch(clearRestaurant());
+        dispatch(clearCart());
         toast.success("Signout Successful!", { duration: 4000 });
       }
     } catch (err) {
