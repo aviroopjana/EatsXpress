@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import UserDropdownMenu from "./UserDropdownMenu";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const Header = () => {
   const { currentUser } = useSelector((state: RootState) => state.user);
@@ -86,9 +87,11 @@ const Header = () => {
               <Button
                 variant={"ghost"}
                 className="hover:bg-transparent"
-                onClick={() =>
-                  navigate(`/cartdetail/${currentUser?.restaurantId}`)
-                }
+                onClick={() => {
+                  currentUser
+                    ? navigate(`/cartdetail/${currentUser?.restaurantId}`)
+                    : toast.info("You must login to view the cart items!", { duration: 2000, position: 'top-center'});
+                }}
               >
                 <div className="relative">
                   <BsCart3
