@@ -6,6 +6,7 @@ import restaurantReducer from './restaurant/restaurantSlice';
 import menuReducer from './restaurant/menuSlice';
 import cuisineReducer from './restaurant/cuisineSlice';
 import cartReducer from './cart/cartSlice';
+import checkOutFormReducer from './cart/CheckoutFormSlice';
 
 const rootReducers = combineReducers({
   user: userReducer,
@@ -13,6 +14,7 @@ const rootReducers = combineReducers({
   menu: menuReducer,
   cuisine: cuisineReducer, 
   cart: cartReducer,
+  checkOutForm: checkOutFormReducer
 });
 
 const persistConfig = {
