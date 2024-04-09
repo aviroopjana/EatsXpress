@@ -1,5 +1,5 @@
 import { Restaurant } from "@/types";
-import { CardContent, CardHeader, CardTitle } from "./ui/card";
+import { CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Trash } from "lucide-react";
 import { Separator } from "./ui/separator";
@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { removeFromCart } from "@/redux/cart/cartSlice";
 import { cartItem } from "@/pages/DetailsPage";
+import CheckOutButton from "./CheckOutButton";
 
 type Props = {
   restaurant: Restaurant;
@@ -23,7 +24,7 @@ const OrderSummary = ({ restaurant }: Props) => {
     }
 
     return cartItems.reduce(
-      (total, item) => total + item.price * item.quantity,
+      (total: number, item: { price: number; quantity: number; }) => total + item.price * item.quantity,
       0
     );
   };
@@ -37,7 +38,7 @@ const OrderSummary = ({ restaurant }: Props) => {
     <CardHeader>
         <CardTitle className="text-2xl font-bold tracking-tight flex justify-between">
           <span>Your Order</span>
-          <span>₹{getTotalCost()}</span>
+          <span>₹{getTotalCost() + restaurant.deliveryPrice}</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-5">
@@ -67,6 +68,13 @@ const OrderSummary = ({ restaurant }: Props) => {
         </div>
         <Separator />
       </CardContent>
+      <CardFooter>
+        <CheckOutButton
+        disabled={cartItems.length === 0}
+        // onCheckout={onCheckout}
+        // isLoading={isCheckoutLoading}
+        />
+      </CardFooter>
     </div>
   );
 };
