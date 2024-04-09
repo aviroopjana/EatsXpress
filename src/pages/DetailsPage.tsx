@@ -12,6 +12,7 @@ export type cartItem = {
   name: string;
   price: number;
   quantity: number;
+  restaurantId: string;
 };
 
 const DetailsPage = () => {
@@ -22,9 +23,13 @@ const DetailsPage = () => {
   const dispatch = useDispatch();
 
   const handleAddToCart = (menuItem: MenuItem) => {
+    if(!restaurantId) {
+      return ;
+    }
     const cartItem: cartItem = {
       ...menuItem,
       quantity: 1,
+      restaurantId: restaurantId
     };
     dispatch(addToCart(cartItem));
   };

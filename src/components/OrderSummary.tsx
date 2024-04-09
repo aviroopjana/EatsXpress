@@ -8,6 +8,7 @@ import { RootState } from "@/redux/store";
 import { removeFromCart } from "@/redux/cart/cartSlice";
 import { cartItem } from "@/pages/DetailsPage";
 import CheckOutButton from "./CheckOutButton";
+import { useCreateCheckoutSession } from "@/api/order_api";
 
 type Props = {
   restaurant: Restaurant;
@@ -17,6 +18,11 @@ const OrderSummary = ({ restaurant }: Props) => {
   const dispatch = useDispatch();
 
   const cartItems = useSelector((state: RootState) => state.cart.items);
+
+  const userFormData = useSelector((state: RootState) => state.checkOutForm); 
+
+  const { createCheckoutSession, isLoading: isCheckoutLoading } =
+    useCreateCheckoutSession();
 
   const getTotalCost = () => {
     if (!cartItems) {
@@ -31,6 +37,23 @@ const OrderSummary = ({ restaurant }: Props) => {
 
   const handleRemoveFromCart = (item: cartItem) => {
     dispatch(removeFromCart(item));
+  };
+
+  const handleCheckout = () => {
+    const checkoutSessionRequest = {
+      cartItems: cartItems.map(item => ({
+        menuItemId: item._id, 
+        name: item.name,
+        quantity: Number(item.quantity),
+        restaurantId: item.restaurantId
+      })),
+      deliveryDetails: userFormData,
+      restaurantId: restaurant._id,
+    };
+
+    createCheckoutSession(checkoutSessionRequest);
+
+    console.log('checkoutSessionRequest:', checkoutSessionRequest);
   };
 
   return (
@@ -70,9 +93,9 @@ const OrderSummary = ({ restaurant }: Props) => {
       </CardContent>
       <CardFooter>
         <CheckOutButton
-        disabled={cartItems.length === 0}
-        // onCheckout={onCheckout}
-        // isLoading={isCheckoutLoading}
+          disabled={cartItems.length === 0}
+          onCheckout={handleCheckout}
+          isLoading={isCheckoutLoading}
         />
       </CardFooter>
     </div>

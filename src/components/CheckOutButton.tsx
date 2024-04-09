@@ -5,21 +5,37 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { CheckoutFieldsType } from "@/types";
+import { useEffect } from "react";
+import { setForm, updateForm } from "@/redux/cart/CheckoutFormSlice";
 
 type Props = {
+  onCheckout: (userFormData: CheckoutFieldsType) => void;
   disabled: boolean;
+  isLoading: boolean;
 };
 
-const CheckOutButton = ({ disabled}: Props) => {
+const CheckOutButton = ({ disabled, onCheckout, isLoading }: Props) => {
   const { currentUser } = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch();
+  const formData = useSelector((state: RootState) => state.checkOutForm);
 
-  if (!currentUser) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    if (currentUser) {
+      const { name, email, phone, address, city, pincode } = currentUser;
+      dispatch(
+        setForm({ name, email, phone, addressLine1: address, city, pincode })
+      );
+    }
+  }, [dispatch, currentUser]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(updateForm({ [event.target.id]: event.target.value }));
+  };
 
   return (
     <Dialog>
@@ -32,13 +48,6 @@ const CheckOutButton = ({ disabled}: Props) => {
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[425px] md:min-w-[700px] bg-gray-50">
-        {/* <UserProfileForm
-          currentUser={currentUser}
-          onSave={onCheckout}
-          isLoading={isGetUserLoading}
-          title="Confirm Deliery Details"
-          buttonText="Continue to payment"
-        /> */}
         <DialogHeader className="text-2xl font-bold mb-4">
           Confirm Delivery Details
           <p className="text-sm font-normal text-muted-foreground">
@@ -52,6 +61,7 @@ const CheckOutButton = ({ disabled}: Props) => {
               id="name"
               placeholder="Enter your full name"
               defaultValue={currentUser?.name}
+              onChange={handleChange}
             />
           </div>
           <div className="flex flex-col space-y-1.5 w-full">
@@ -70,14 +80,16 @@ const CheckOutButton = ({ disabled}: Props) => {
               id="phone"
               placeholder="Enter your phone number"
               defaultValue={currentUser?.phone}
+              onChange={handleChange}
             />
           </div>
           <div className="flex flex-col space-y-1.5 w-full">
             <Label>Address Line 1</Label>
             <Input
-              id="address"
+              id="addressLine1"
               placeholder="Enter your address"
               defaultValue={currentUser?.address}
+              onChange={handleChange}
             />
           </div>
           <div className="flex flex-col space-y-1.5 w-full">
@@ -86,6 +98,7 @@ const CheckOutButton = ({ disabled}: Props) => {
               id="city"
               placeholder="Enter your city"
               defaultValue={currentUser?.city}
+              onChange={handleChange}
             />
           </div>
           <div className="flex flex-col space-y-1.5 w-full">
@@ -94,10 +107,15 @@ const CheckOutButton = ({ disabled}: Props) => {
               id="pincode"
               placeholder="Enter your Pincode"
               defaultValue={currentUser?.pincode}
+              onChange={handleChange}
             />
           </div>
           <div>
-            <Button className="bg-orange-500 hover:bg-orange-600">
+            <Button
+              className="bg-orange-500 hover:bg-orange-600"
+              onClick={() => onCheckout(formData)}
+              disabled={isLoading}
+            >
               Continue to payment
             </Button>
           </div>
