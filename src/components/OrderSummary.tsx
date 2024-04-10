@@ -45,6 +45,7 @@ const OrderSummary = ({ restaurant }: Props) => {
         menuItemId: item._id, 
         name: item.name,
         quantity: Number(item.quantity),
+        price: item.price * 100,
         restaurantId: item.restaurantId
       })),
       deliveryDetails: userFormData,

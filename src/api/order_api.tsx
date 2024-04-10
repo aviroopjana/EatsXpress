@@ -8,7 +8,6 @@ export const useGetMyOrders = () => {
       method: 'POST',
       headers: {
         'Content-Type' : 'application/json',
-        'Authorization': `Bearer ${process.env.STRIPE_SECRET_KEY}`
       }
     });
 
@@ -74,7 +73,11 @@ export const useCreateCheckoutSession = () => {
     isLoading,
     error,
     reset,
-  } = useMutation(createCheckoutSessionRequest);
+  } = useMutation(createCheckoutSessionRequest, {
+    onSuccess: (data) => {
+      window.location.href = data.url;
+    },
+  });
 
   if (error) {
     toast.error(error.toString());
